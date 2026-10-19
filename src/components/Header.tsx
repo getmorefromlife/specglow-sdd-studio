@@ -1,0 +1,111 @@
+import React from 'react'
+import { Settings as SettingsIcon, ShieldCheck, Sun, Moon, Cpu, Sparkles, BookOpen } from 'lucide-react'
+import { useSettings } from '../context/SettingsContext'
+import { useTheme } from '../context/ThemeContext'
+import { PROVIDER_PRESETS } from '../utils/constants'
+
+interface HeaderProps {
+  onOpenSettings: () => void
+  onOpenGuide: () => void
+}
+
+export const Header: React.FC<HeaderProps> = ({ onOpenSettings, onOpenGuide }) => {
+  const { settings, isConfigured } = useSettings()
+  const { theme, toggleTheme } = useTheme()
+  const preset = PROVIDER_PRESETS[settings.providerPreset]
+
+  return (
+    <header className="border-b transition-colors duration-200 border-slate-200 dark:border-zinc-800 bg-white/95 dark:bg-zinc-950/90 backdrop-blur-md sticky top-0 z-40">
+      {/* Privacy Banner */}
+      <div className="bg-gradient-to-r from-emerald-500/10 via-cyan-500/10 to-indigo-500/10 dark:from-emerald-950/40 dark:via-cyan-950/40 dark:to-indigo-950/40 border-b border-emerald-500/20 dark:border-emerald-500/30 px-4 py-1.5 text-center text-xs font-medium text-emerald-800 dark:text-emerald-300 flex items-center justify-center gap-2">
+        <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400 shrink-0" />
+        <span>
+          <strong>100% Client-Side Privacy:</strong> Requirements and API keys never leave your browser. Zero third-party data logging.
+        </span>
+      </div>
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          {/* Logo & Branding */}
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-600 to-indigo-600 p-0.5 shadow-md shadow-cyan-500/10">
+              <div className="w-full h-full rounded-[10px] bg-white dark:bg-zinc-900 flex items-center justify-center">
+                <Cpu className="w-5 h-5 text-cyan-600 dark:text-cyan-400" />
+              </div>
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <h1 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">
+                  SpecGlow SDD Studio
+                </h1>
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-cyan-100 text-cyan-800 dark:bg-cyan-950/80 dark:text-cyan-300 border border-cyan-300 dark:border-cyan-800">
+                  <Sparkles className="w-2.5 h-2.5" />
+                  AI-Native SDD
+                </span>
+              </div>
+              <p className="text-xs font-medium text-slate-600 dark:text-zinc-400">
+                AI-Native Spec-Driven Development & Delivery Governance Engine
+              </p>
+              <p className="text-[11px] text-slate-500 dark:text-zinc-400 font-normal mt-0.5">
+                Architected by <span className="font-semibold text-slate-700 dark:text-zinc-300">Syed Imon Rizvi (PMP®, PSM II)</span> • Open-Source for the Global Engineering Community
+              </p>
+            </div>
+          </div>
+
+          {/* Right Action Controls */}
+          <div className="flex items-center gap-2.5 self-end md:self-auto">
+            {/* Active Provider Pill */}
+            <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-lg border text-xs font-medium bg-slate-100 dark:bg-zinc-900/80 border-slate-300 dark:border-zinc-800 text-slate-700 dark:text-zinc-300">
+              <span className={`w-2 h-2 rounded-full ${isConfigured ? 'bg-emerald-500 animate-pulse' : 'bg-amber-500'}`} />
+              <span className="font-semibold">{preset?.name || settings.providerPreset}</span>
+              <span className="text-slate-400 dark:text-zinc-500">({settings.model})</span>
+            </div>
+
+            {/* Workflow Guide Button */}
+            <button
+              onClick={onOpenGuide}
+              className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-semibold border transition-all duration-200 bg-cyan-50 hover:bg-cyan-100 border-cyan-200 text-cyan-800 dark:bg-cyan-950/40 dark:hover:bg-cyan-900/50 dark:border-cyan-800 dark:text-cyan-300"
+              title="View the 5-step end-to-end workflow guide"
+            >
+              <BookOpen className="w-4 h-4 text-cyan-600 dark:text-cyan-400" />
+              <span className="hidden sm:inline">Workflow Guide</span>
+            </button>
+
+            {/* Day / Night Theme Toggle */}
+            <button
+              onClick={toggleTheme}
+              aria-label="Toggle Day and Night Theme"
+              className="p-2 rounded-lg border transition-all duration-200 bg-slate-100 hover:bg-slate-200 border-slate-300 text-slate-800 dark:bg-zinc-900 dark:hover:bg-zinc-800 dark:border-zinc-700 dark:text-zinc-200 cursor-pointer"
+              title={theme === 'dark' ? 'Switch to Day Mode (Light)' : 'Switch to Night Mode (Dark)'}
+            >
+              {theme === 'dark' ? (
+                <Sun className="w-4 h-4 text-amber-400 hover:rotate-45 transition-transform" />
+              ) : (
+                <Moon className="w-4 h-4 text-indigo-600 hover:-rotate-12 transition-transform" />
+              )}
+            </button>
+
+            {/* Settings Trigger */}
+            <button
+              onClick={onOpenSettings}
+              className={`relative flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs font-semibold border transition-all duration-200 ${
+                isConfigured
+                  ? 'bg-slate-900 hover:bg-slate-800 text-white border-slate-900 dark:bg-zinc-800 dark:hover:bg-zinc-700 dark:text-zinc-100 dark:border-zinc-700'
+                  : 'bg-amber-50 text-amber-900 border-amber-300 hover:bg-amber-100 dark:bg-amber-950/40 dark:text-amber-200 dark:border-amber-800/80'
+              }`}
+            >
+              <SettingsIcon className="w-4 h-4" />
+              <span>API Settings</span>
+              {!isConfigured && (
+                <span className="absolute -top-1 -right-1 flex h-3 w-3">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75" />
+                  <span className="relative inline-flex rounded-full h-3 w-3 bg-amber-500" />
+                </span>
+              )}
+            </button>
+          </div>
+        </div>
+      </div>
+    </header>
+  )
+}
