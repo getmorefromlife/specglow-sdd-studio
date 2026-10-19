@@ -290,7 +290,9 @@ Continuous compliance is enforced through automated pull request gating:
 ## 6. Formal Architectural & Governance Sign-Off
 
 ### Solutions Architecture Sign-Off:
-**Name:** Syed Imon Rizvi, PMP®, PSM II  
+**Name:** Syed Imon Rizvi (Mercer and Mills)  
+**Organization:** Mercer and Mills (www.mercerandmills.com)  
+**LinkedIn:** https://www.linkedin.com/in/syedimonrizvi  
 **Role:** Principal Enterprise Solutions Architect  
 **Attestation Status:** ✅ **APPROVED & LOCKED**  
 **Digital Verification:** \`SHA256:${pkg.id}-SPECGLOW-ATTESTED\`  
@@ -383,7 +385,7 @@ export function downloadSddZipBundle(pkg: SddArtifactPackage): void {
         {
           schemaVersion: 'specglow-sdd-v3',
           generatedBy: 'SpecGlow SDD Studio',
-          architect: 'Syed Imon Rizvi (PMP®, PSM II)',
+          architect: 'Syed Imon Rizvi (Mercer and Mills)',
           ecosystem: [
             'Claude Code',
             'Google Antigravity',
@@ -417,7 +419,7 @@ export function downloadSddZipBundle(pkg: SddArtifactPackage): void {
         {
           schemaVersion: 'specglow-sdd-v3',
           generatedBy: 'SpecGlow SDD Studio',
-          architect: 'Syed Imon Rizvi (PMP®, PSM II)',
+          architect: 'Syed Imon Rizvi (Mercer and Mills)',
           ecosystem: [
             'Claude Code',
             'Google Antigravity',

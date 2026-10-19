@@ -211,4 +211,8 @@ This project is licensed under the **Apache-2.0 License** — see the [LICENSE](
 
 **Created by:**  
 **Syed Imon Rizvi (Mercer and Mills)**  
+- 🌐 **Website:** [www.mercerandmills.com](https://www.mercerandmills.com)  
+- 💼 **LinkedIn:** [https://www.linkedin.com/in/syedimonrizvi](https://www.linkedin.com/in/syedimonrizvi)  
+- ✉️ **Contact:** [contact@mercerandmills.com](mailto:contact@mercerandmills.com)  
+
 *Enterprise Solutions Architect & Agile Delivery Governance Leader*

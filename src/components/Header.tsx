@@ -47,7 +47,16 @@ export const Header: React.FC<HeaderProps> = ({ onOpenSettings, onOpenGuide }) =
                 AI-Native Spec-Driven Development & Delivery Governance Engine
               </p>
               <p className="text-[11px] text-slate-500 dark:text-zinc-400 font-normal mt-0.5">
-                Architected by <span className="font-semibold text-slate-700 dark:text-zinc-300">Syed Imon Rizvi (PMP®, PSM II)</span> • Open-Source for the Global Engineering Community
+                Created by{' '}
+                <a
+                  href="https://www.mercerandmills.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="font-semibold text-slate-700 dark:text-zinc-300 hover:text-cyan-600 dark:hover:text-cyan-400 underline underline-offset-2 transition-colors"
+                >
+                  Syed Imon Rizvi (Mercer and Mills)
+                </a>{' '}
+                • Licensed under Apache-2.0
               </p>
             </div>
           </div>

@@ -193,8 +193,38 @@ const AppContent: React.FC = () => {
           <p className="text-xs font-semibold text-slate-700 dark:text-zinc-300">
             SpecGlow SDD Studio • AI-Native Spec-Driven Development & Delivery Governance Engine
           </p>
-          <p className="text-[11px] text-slate-500 dark:text-zinc-400">
-            Created by <span className="font-semibold text-slate-700 dark:text-zinc-300">Syed Imon Rizvi (Mercer and Mills)</span> • Licensed under Apache-2.0
+          <p className="text-[11px] text-slate-500 dark:text-zinc-400 flex flex-wrap items-center justify-center gap-1.5 sm:gap-2">
+            <span>
+              Created by{' '}
+              <a
+                href="https://www.mercerandmills.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-semibold text-slate-700 dark:text-zinc-300 hover:text-cyan-600 dark:hover:text-cyan-400 underline underline-offset-2 transition-colors"
+              >
+                Syed Imon Rizvi (Mercer and Mills)
+              </a>
+            </span>
+            <span>•</span>
+            <a
+              href="https://www.mercerandmills.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-slate-600 dark:text-zinc-400 hover:text-cyan-600 dark:hover:text-cyan-400 underline underline-offset-2 transition-colors"
+            >
+              www.mercerandmills.com
+            </a>
+            <span>•</span>
+            <a
+              href="https://www.linkedin.com/in/syedimonrizvi"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-slate-600 dark:text-zinc-400 hover:text-cyan-600 dark:hover:text-cyan-400 underline underline-offset-2 transition-colors"
+            >
+              LinkedIn
+            </a>
+            <span>•</span>
+            <span>Licensed under Apache-2.0</span>
           </p>
         </div>
       </footer>

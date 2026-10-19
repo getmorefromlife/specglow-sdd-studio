@@ -50,16 +50,40 @@ export const Footer: React.FC = () => {
             </span>
             <span className="text-zinc-500">•</span>
             <span>
-              Created by <strong className="text-zinc-200">Syed Imon Rizvi (Mercer and Mills)</strong>
+              Created by{' '}
+              <a
+                href="https://www.mercerandmills.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-semibold text-zinc-200 hover:text-white underline underline-offset-2 transition-colors"
+              >
+                Syed Imon Rizvi (Mercer and Mills)
+              </a>
             </span>
           </div>
 
-          <div className="flex items-center gap-6">
+          <div className="flex flex-wrap items-center gap-4 sm:gap-6">
+            <a
+              href="https://www.mercerandmills.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-zinc-400 hover:text-white transition-colors"
+            >
+              www.mercerandmills.com
+            </a>
+            <a
+              href="https://www.linkedin.com/in/syedimonrizvi"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-zinc-400 hover:text-white transition-colors"
+            >
+              LinkedIn
+            </a>
             <span className="text-zinc-400">
               Licensed under Apache-2.0
             </span>
             <a
-              href="https://github.com/SyedImonRizvi/AgileSprint-AI"
+              href="https://github.com/getmorefromlife/specglow-sdd-studio"
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center gap-1.5 text-zinc-400 hover:text-white transition-colors"
