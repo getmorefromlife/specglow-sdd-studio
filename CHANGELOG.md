@@ -1,8 +1,50 @@
 # 📜 Changelog
-All notable changes to **SpecFlow SDD Studio** will be documented in this file.
+All notable changes to **SpecGlow SDD Studio** will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+---
+
+## [3.0.0] - 2026-10-20 (Enterprise Release)
+
+### 🌟 Added
+- **Global Rebranding to SpecGlow SDD Studio (`specglow-sdd-studio`):**
+  - Fully rebranded application identity, metadata, page titles, and CLI bindings from SpecFlow to **SpecGlow SDD Studio**.
+  - Updated `package.json` to v3.0.0 (`specglow-sdd-studio`) and licensed under **Apache-2.0**.
+  - Updated copyright and attribution across application footer, documentation, and LICENSE to **Syed Imon Rizvi (Mercer and Mills)**.
+  - Standardized Model Context Protocol configuration to `specglow-mcp.json` and `specglow-sdd` server name.
+- **6-Region Regulatory & Cybersecurity Matrix:**
+  - Added 7 distinct jurisdictional compliance profiles selectable in Step 2:
+    1. **US / Canada (Federal & FinTech):** SOC 2 Type II, HIPAA, FedRAMP, CCPA, PCI-DSS v4.0, GLBA.
+    2. **EU / UK (GDPR & Digital Sovereignty):** GDPR (Articles 25/32), DORA, EU AI Act, NIS2, UK DPA 2018.
+    3. **GCC / Middle East (Sovereignty & Privacy):** UAE PDPL, Saudi NDMO / SAMA Cyber Security Framework, CBUAE.
+    4. **Australia / New Zealand (CPS 234 & Privacy):** APRA CPS 234, Privacy Act 1988, Essential Eight, NZ Privacy Act 2020.
+    5. **APAC / Singapore (MAS TRM & Cross-Border):** MAS Technology Risk Management, Singapore PDPA, Cross-Border Privacy Rules.
+    6. **Pakistan (SBP & Digital Governance):** State Bank of Pakistan (SBP) Framework for Enterprise Technology Governance, PECA 2016.
+    7. **Global Enterprise Baseline:** ISO/IEC 27001:2022, SOC 2 Type II, and NIST Cybersecurity Framework 2.0.
+  - Mandatory jurisdictional dilemma auto-injected into Step 3 Architectural Interrogation ("Grill-Me" Loop).
+- **Cybersecurity Engine: STRIDE Threat Modeling & Anti-Slopsquatting:**
+  - Synthesizes an audit-ready **STRIDE Threat Modeling Matrix** table in `constitution.md` (Spoofing, Tampering, Repudiation, Information Disclosure, Denial of Service, Elevation of Privilege) with designated mitigation strategies and automated verification commands.
+  - Injected an **Anti-Slopsquatting Approved Package Whitelist** invariant into `constitution.md` and `CLAUDE.md`, strictly prohibiting hallucinated or unvetted dependencies and enforcing package lockfile pinning with integrity hashes.
+- **Client Security & Architecture Attestation (`SECURITY-ATTESTATION.md`):**
+  - Implemented `generateSecurityAttestation(pkg)` producing an executive, audit-ready compliance document.
+  - Details Executive Summary, Jurisdictional Compliance, Zero-Telemetry BYOK Privacy Attestation, STRIDE Threat Summary, Ecosystem Package Integrity, and Continuous CI Verification commitments.
+  - Added 1-click download button in Step 5 and included automatically in the `.zip` export bundle.
+- **Persistent Initiative Library (Native IndexedDB):**
+  - Implemented 100% in-browser, zero-backend persistent storage via native IndexedDB (`specglow_sdd_db`, object store `initiatives`).
+  - Automatically saves all synthesized initiatives and imported manifests.
+  - Added interactive **"Saved Initiatives"** modal in Step 1 with 1-click **Load** and **Delete** actions.
+- **Production Cloud Deployment & Vercel SPA Routing:**
+  - Added `vercel.json` with single-page app rewrite routing for Vite.
+  - Deployed to live production on Vercel: `https://specglow-sdd-studio.vercel.app`.
+  - Linked remote GitHub repository: `https://github.com/getmorefromlife/specglow-sdd-studio.git`.
+
+### 🔧 Changed
+- Updated application footer to: `"Created by Syed Imon Rizvi (Mercer and Mills) • Licensed under Apache-2.0"`.
+- Replaced `LICENSE` with the official Apache License Version 2.0.
+- Updated `exportUtils.ts` to include `SECURITY-ATTESTATION.md` and `specglow-mcp.json` in the master `.zip` bundle (now 18+ files).
+- Hardened TypeScript interfaces in `types/index.ts` with 0 `any` types.
 
 ---
 
