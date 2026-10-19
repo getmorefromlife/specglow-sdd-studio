@@ -46,17 +46,17 @@ export const Footer: React.FC = () => {
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-xs pt-4 border-t border-zinc-800/60">
           <div className="flex items-center gap-2">
             <span className="font-semibold text-zinc-200">
-              AgileSprint AI
+              SpecGlow SDD Studio
             </span>
             <span className="text-zinc-500">•</span>
             <span>
-              Architected by <strong className="text-zinc-200">Syed Imon Rizvi (PMP®, PSM II)</strong>
+              Created by <strong className="text-zinc-200">Syed Imon Rizvi (Mercer and Mills)</strong>
             </span>
           </div>
 
           <div className="flex items-center gap-6">
             <span className="text-zinc-400">
-              Free & Open Source for the Global IT Community (MIT License)
+              Licensed under Apache-2.0
             </span>
             <a
               href="https://github.com/SyedImonRizvi/AgileSprint-AI"

@@ -194,7 +194,7 @@ const AppContent: React.FC = () => {
             SpecGlow SDD Studio • AI-Native Spec-Driven Development & Delivery Governance Engine
           </p>
           <p className="text-[11px] text-slate-500 dark:text-zinc-400">
-            Architected by <span className="font-semibold text-slate-700 dark:text-zinc-300">Syed Imon Rizvi (PMP®, PSM II)</span> • Open-Source for the Global Engineering Community
+            Created by <span className="font-semibold text-slate-700 dark:text-zinc-300">Syed Imon Rizvi (Mercer and Mills)</span> • Licensed under Apache-2.0
           </p>
         </div>
       </footer>

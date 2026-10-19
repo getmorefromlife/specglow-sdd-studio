@@ -1,6 +1,8 @@
 {
   "name": "specglow-sdd-studio",
   "description": "SpecGlow SDD Studio - Enterprise Agentic Spec-Driven Development & Delivery Governance Engine",
+  "author": "Syed Imon Rizvi (Mercer and Mills)",
+  "license": "Apache-2.0",
   "private": true,
   "version": "3.0.0",
   "type": "module",

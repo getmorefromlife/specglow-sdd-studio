@@ -1,12 +1,12 @@
 # 🚀 SpecGlow SDD Studio (v3.0 Enterprise Release)
 ### Enterprise Agentic Spec-Driven Development & Delivery Governance Engine
 
-> **Architected by Syed Imon Rizvi (PMP®, PSM II) — Free & Open Source for Global IT Consultancies & Enterprise Teams.**  
+> **Created by Syed Imon Rizvi (Mercer and Mills) — Free & Open Source for Global IT Consultancies & Enterprise Teams.**  
 > *100% Client-Side In-Memory Execution • Zero Backend Server Cost • Bring Your Own Key (BYOK) • Zero Telemetry*
 
 ---
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![License: Apache-2.0](https://img.shields.io/badge/License-Apache--2.0-blue.svg)](LICENSE)
 [![Release](https://img.shields.io/badge/Release-v3.0%20Enterprise-emerald.svg)](package.json)
 [![React](https://img.shields.io/badge/React-19-61dafb.svg)](https://react.dev)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.x-blue.svg)](https://www.typescriptlang.org)
@@ -207,8 +207,8 @@ npm run preview
 
 ## 📜 License & Open-Source Attribution
 
-This project is licensed under the **MIT License** — free and open source for engineering teams, agile practitioners, and the global software engineering community.
+This project is licensed under the **Apache-2.0 License** — see the [LICENSE](LICENSE) file for details.
 
-**Architected & Designed by:**  
-**Syed Imon Rizvi (PMP®, PSM II)**  
+**Created by:**  
+**Syed Imon Rizvi (Mercer and Mills)**  
 *Enterprise Solutions Architect & Agile Delivery Governance Leader*
