@@ -22,7 +22,10 @@ import {
   Terminal,
   Play,
   Building2,
-  Lock
+  Lock,
+  FileCode,
+  Languages,
+  Code
 } from 'lucide-react'
 import { useSettings } from '../context/SettingsContext'
 import { Header } from '../components/Header'
@@ -34,7 +37,7 @@ import { DeliverySimulator } from '../components/DeliverySimulator'
 import { synthesizeSddPackage } from '../services/aiService'
 import { generateInterrogationQuestions, DOMAIN_FALLBACK_QUESTIONS } from '../services/interrogationService'
 import { saveInitiativeToDb } from '../utils/storageUtils'
-import { downloadSddZipBundle, downloadSddJsonBundle, downloadMcpServer, downloadFile } from '../utils/exportUtils'
+import { downloadSddZipBundle, downloadSddJsonBundle, downloadMcpServer, downloadEnvExample, downloadFile } from '../utils/exportUtils'
 import { generateCursorRules, generateClaudeMd, generateAgentsMd } from '../utils/agentRuleGenerators'
 import { generateJiraCsv } from '../utils/taskExportGenerators'
 import { DOMAIN_CATEGORIES } from '../utils/constants'
@@ -42,7 +45,9 @@ import type {
   RequirementInput,
   SddArtifactPackage,
   ArchitecturalInterrogationQuestion,
-  TargetDepth
+  TargetDepth,
+  PlatformTarget,
+  TechStackPreset
 } from '../types'
 
 interface StarterTemplate {
@@ -189,6 +194,28 @@ const STARTER_TEMPLATES: StarterTemplate[] = [
     icon: '🏛️',
     description: 'Public agency digital service portal with WCAG AAA accessibility, citizen identity verification, and FedRAMP High audit controls.',
     prompt: 'Build a secure GovTech citizen portal for public benefits and grant management. Must adhere to FedRAMP High security controls, WCAG 2.1 AAA accessibility, encrypted document vaulting with automated redaction, and strict legislative audit logging.'
+  },
+  {
+    id: 'edtech-lms',
+    title: 'Interactive EdTech LMS & Knowledge Engine',
+    category: 'Education & Learning',
+    domain: 'Education, EdTech & LMS (FERPA, COPPA, xAPI)',
+    targetDepth: 'Mission-Critical / Enterprise',
+    badge: 'FERPA & xAPI LRS',
+    icon: '🎓',
+    description: 'Interactive course learning platform with real-time video lectures, xAPI learning analytics, quiz evaluation, and strict student privacy.',
+    prompt: 'Architect an enterprise interactive learning management system (LMS). Requires student progress telemetry via xAPI with a dedicated Learning Record Store (LRS), adaptive bitrate HLS lecture video streaming with Cloudflare Stream DRM, automated rubric assessments, and COPPA/FERPA student privacy compliance.'
+  },
+  {
+    id: 'ethical-community',
+    title: 'Ethical Community & Decentralized Mutual Aid',
+    category: 'Community & Social Impact',
+    domain: 'Ethical, Community & Non-Profit (Zero-Knowledge, Decentralized)',
+    targetDepth: 'Mission-Critical / Enterprise',
+    badge: 'Zero-Knowledge & Privacy',
+    icon: '🤝',
+    description: 'Decentralized mutual aid and activist platform with pseudonymous identities, cryptographic verification, and community consensus moderation.',
+    prompt: 'Design an ethical community and mutual aid coordination platform. Requires zero-knowledge pseudonymous member identities, transparent multi-signature community grant allocations, decentralized quorum-based abuse reporting, and automated 30-day hard database record purging for privacy preservation.'
   }
 ]
 
@@ -214,6 +241,20 @@ const REGULATORY_DOMAINS: DomainOption[] = [
     frameworks: 'HIPAA Security Rule, HITECH, FDA 21 CFR',
     icon: '🩺',
     color: 'from-emerald-500/20 to-teal-500/20 border-emerald-500/30 dark:border-emerald-500/40'
+  },
+  {
+    id: 'Education, EdTech & LMS (FERPA, COPPA, xAPI)',
+    name: 'Education, EdTech & LMS',
+    frameworks: 'FERPA, COPPA, xAPI / SCORM, Child Safety',
+    icon: '🎓',
+    color: 'from-amber-500/20 to-yellow-500/20 border-amber-500/30 dark:border-amber-500/40'
+  },
+  {
+    id: 'Ethical, Community & Non-Profit (Zero-Knowledge, Decentralized)',
+    name: 'Ethical & Community',
+    frameworks: 'Zero-Knowledge Privacy, Decentralized Quorums',
+    icon: '🤝',
+    color: 'from-teal-500/20 to-emerald-500/20 border-teal-500/30 dark:border-teal-500/40'
   },
   {
     id: 'Multi-Tenant B2B SaaS Platform (SOC-2 Type II, GDPR)',
@@ -260,6 +301,9 @@ export const VisualWorkflowPage: React.FC = () => {
     requirement: '',
     domain: 'FinTech / Multi-Currency & Wallets (PCI-DSS v4.0, SOX)',
     targetDepth: 'Mission-Critical / Enterprise',
+    platformTarget: 'web-portal',
+    techStack: 'nextjs-shadcn',
+    enableRtlMultilingual: false,
     companyStructure: 'Single Autonomous Squad (Unified Codebase & Full-Stack Team)',
     brownfieldAssets: ''
   })
@@ -284,6 +328,8 @@ export const VisualWorkflowPage: React.FC = () => {
     'All',
     'FinTech & Banking',
     'Healthcare & Life Sciences',
+    'Education & Learning',
+    'Community & Social Impact',
     'AI & Autonomous Agents',
     'E-Commerce & Retail',
     'Cybersecurity & Zero-Trust',
@@ -747,6 +793,200 @@ export const VisualWorkflowPage: React.FC = () => {
                     </optgroup>
                   ))}
                 </select>
+              </div>
+            </div>
+
+            {/* Platform Target Architecture Selector */}
+            <div className="space-y-3 pt-2">
+              <div className="flex items-center justify-between">
+                <label className="text-sm sm:text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                  <Globe className="w-4 h-4 text-cyan-500" />
+                  <span>Platform Target Architecture</span>
+                </label>
+                <span className="text-xs text-cyan-600 dark:text-cyan-400 font-semibold">Client-Side Runtime Target</span>
+              </div>
+              <p className="text-xs text-slate-500 dark:text-zinc-400">
+                SpecGlow synthesizes platform-native invariants, touch target thresholds, and caching boundaries tailored to your target execution environment:
+              </p>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                {[
+                  {
+                    id: 'web-portal' as PlatformTarget,
+                    title: 'Web Portals & Apps',
+                    badge: 'Next.js / SSR',
+                    icon: '🌐',
+                    desc: 'Corporate portals, public landing pages, SEO-indexed applications, and fast edge delivery.'
+                  },
+                  {
+                    id: 'mobile-app' as PlatformTarget,
+                    title: 'Mobile iOS & Android',
+                    badge: 'Expo / Native',
+                    icon: '📱',
+                    desc: 'Cross-platform mobile apps with offline SQLite, APNs/FCM push, and 48px touch targets.'
+                  },
+                  {
+                    id: 'saas-web' as PlatformTarget,
+                    title: 'Enterprise B2B SaaS',
+                    badge: 'Multi-Tenant',
+                    icon: '🏢',
+                    desc: 'Complex multi-tenant dashboards, analytical workflows, role-based controls, and billing.'
+                  },
+                  {
+                    id: 'e-commerce' as PlatformTarget,
+                    title: 'High-Volume Commerce',
+                    badge: 'Store & Cart',
+                    icon: '🛍️',
+                    desc: 'Omnichannel storefronts, sub-second product catalogs, cart reservation, and checkout rails.'
+                  }
+                ].map(plat => {
+                  const isSelected = (input.platformTarget || 'web-portal') === plat.id
+                  return (
+                    <button
+                      key={plat.id}
+                      type="button"
+                      onClick={() => setInput(prev => ({ ...prev, platformTarget: plat.id }))}
+                      className={`p-4 rounded-xl border text-left transition-all cursor-pointer shadow-[0_1px_6px_rgba(0,0,0,0.02)] dark:shadow-none ${
+                        isSelected
+                          ? 'bg-cyan-50/80 dark:bg-cyan-950/60 border-cyan-500/80 dark:border-cyan-400 ring-2 ring-cyan-500/20 shadow-sm'
+                          : 'bg-white/90 dark:bg-zinc-950 border-slate-200/70 dark:border-zinc-800/80 hover:border-slate-300 dark:hover:border-zinc-700'
+                      }`}
+                    >
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="flex items-center gap-2">
+                          <span className="text-xl">{plat.icon}</span>
+                          <h5 className="text-sm font-bold text-slate-900 dark:text-white">
+                            {plat.title}
+                          </h5>
+                        </div>
+                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 dark:bg-zinc-800 text-slate-600 dark:text-zinc-300 shrink-0">
+                          {plat.badge}
+                        </span>
+                      </div>
+                      <p className="text-xs text-slate-500 dark:text-zinc-400 mt-2 font-medium">
+                        {plat.desc}
+                      </p>
+                    </button>
+                  )
+                })}
+              </div>
+            </div>
+
+            {/* Preferred Tech Stack & UI System Selector */}
+            <div className="space-y-3 pt-2">
+              <div className="flex items-center justify-between">
+                <label className="text-sm sm:text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                  <Code className="w-4 h-4 text-indigo-500" />
+                  <span>Preferred Tech Stack & UI System</span>
+                </label>
+                <span className="text-xs text-indigo-600 dark:text-indigo-400 font-semibold">Strict Library Gating</span>
+              </div>
+              <p className="text-xs text-slate-500 dark:text-zinc-400">
+                Enforces approved package imports in agent prompt rules to eliminate hallucinated libraries:
+              </p>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                {[
+                  {
+                    id: 'nextjs-shadcn' as TechStackPreset,
+                    title: 'Next.js 15 + shadcn/ui',
+                    badge: 'Recommended',
+                    desc: 'App Router, React 19, Tailwind CSS. Strictly imports UI components from @/components/ui.'
+                  },
+                  {
+                    id: 'astro-content' as TechStackPreset,
+                    title: 'Astro 5 + Content Collections',
+                    badge: 'Content & Docs',
+                    desc: 'Zero-JS client by default, Tailwind CSS, and MDX for blazing fast documentation portals.'
+                  },
+                  {
+                    id: 'react-native' as TechStackPreset,
+                    title: 'React Native (Expo SDK 52)',
+                    badge: 'iOS & Android',
+                    desc: 'NativeWind v4 (Tailwind), local offline SQLite persistence, and universal deep links.'
+                  },
+                  {
+                    id: 'flutter-dart' as TechStackPreset,
+                    title: 'Flutter 3.x + Material 3',
+                    badge: 'Dart Multi-Platform',
+                    desc: 'Cross-platform native compilation with strict Riverpod state management.'
+                  },
+                  {
+                    id: 'fastapi-react' as TechStackPreset,
+                    title: 'FastAPI + React 19 SPA',
+                    badge: 'Python Backend',
+                    desc: 'Python 3.12 backend adhering to OpenAPI specs + React 19 SPA frontend with Tailwind.'
+                  },
+                  {
+                    id: 'stack-agnostic' as TechStackPreset,
+                    title: 'Stack-Agnostic / AI Standard',
+                    badge: 'Decoupled',
+                    desc: 'Framework-independent contract specifications allowing AI agents to determine optimal tooling.'
+                  }
+                ].map(stk => {
+                  const isSelected = (input.techStack || 'nextjs-shadcn') === stk.id
+                  return (
+                    <button
+                      key={stk.id}
+                      type="button"
+                      onClick={() => setInput(prev => ({ ...prev, techStack: stk.id }))}
+                      className={`p-4 rounded-xl border text-left transition-all cursor-pointer shadow-[0_1px_6px_rgba(0,0,0,0.02)] dark:shadow-none ${
+                        isSelected
+                          ? 'bg-indigo-50/80 dark:bg-indigo-950/60 border-indigo-500/80 dark:border-indigo-400 ring-2 ring-indigo-500/20 shadow-sm'
+                          : 'bg-white/90 dark:bg-zinc-950 border-slate-200/70 dark:border-zinc-800/80 hover:border-slate-300 dark:hover:border-zinc-700'
+                      }`}
+                    >
+                      <div className="flex items-start justify-between gap-2">
+                        <h5 className="text-sm font-bold text-slate-900 dark:text-white">
+                          {stk.title}
+                        </h5>
+                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 dark:bg-zinc-800 text-slate-600 dark:text-zinc-300 shrink-0">
+                          {stk.badge}
+                        </span>
+                      </div>
+                      <p className="text-xs text-slate-500 dark:text-zinc-400 mt-2 font-medium">
+                        {stk.desc}
+                      </p>
+                    </button>
+                  )
+                })}
+              </div>
+            </div>
+
+            {/* Multilingual & RTL Toggle */}
+            <div className="p-4 sm:p-5 rounded-xl border border-slate-200/70 dark:border-zinc-800/80 bg-slate-50/70 dark:bg-zinc-950/70 space-y-2.5 shadow-xs">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div className="flex items-start gap-3">
+                  <div className="w-9 h-9 rounded-xl bg-purple-50 dark:bg-purple-950/60 border border-purple-200 dark:border-purple-800 flex items-center justify-center text-purple-600 dark:text-purple-400 shrink-0 mt-0.5">
+                    <Languages className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <h4 className="text-sm font-bold text-slate-900 dark:text-white">
+                        Multilingual & RTL Support (Arabic / Urdu / English)
+                      </h4>
+                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-purple-100 dark:bg-purple-950 text-purple-800 dark:text-purple-300">
+                        i18n & Logical CSS
+                      </span>
+                    </div>
+                    <p className="text-xs text-slate-500 dark:text-zinc-400 mt-0.5">
+                      Enforces CSS logical properties (<code className="text-purple-600 dark:text-purple-400">ms-</code>, <code className="text-purple-600 dark:text-purple-400">me-</code>, <code className="text-purple-600 dark:text-purple-400">ps-</code>, <code className="text-purple-600 dark:text-purple-400">pe-</code>, <code className="text-purple-600 dark:text-purple-400">start-</code>, <code className="text-purple-600 dark:text-purple-400">end-</code>), dynamic <code className="text-purple-600 dark:text-purple-400">dir="rtl"</code> switching, and Google Noto Naskh/Nastaliq font fallbacks in agent instructions.
+                    </p>
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => setInput(prev => ({ ...prev, enableRtlMultilingual: !prev.enableRtlMultilingual }))}
+                  className={`px-4 py-2 rounded-xl text-xs font-bold transition-all shrink-0 cursor-pointer flex items-center gap-2 ${
+                    input.enableRtlMultilingual
+                      ? 'bg-purple-600 text-white shadow-sm ring-2 ring-purple-500/20'
+                      : 'bg-white dark:bg-zinc-800 border border-slate-300 dark:border-zinc-700 text-slate-700 dark:text-zinc-300 hover:bg-slate-100'
+                  }`}
+                >
+                  <span className={`w-2 h-2 rounded-full ${input.enableRtlMultilingual ? 'bg-white' : 'bg-slate-400'}`} />
+                  <span>{input.enableRtlMultilingual ? 'RTL Enabled (Active)' : 'Enable RTL & Multilingual'}</span>
+                </button>
               </div>
             </div>
 
@@ -1287,7 +1527,7 @@ export const VisualWorkflowPage: React.FC = () => {
                   Download Delivery Artifacts
                 </h4>
 
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
                   <button
                     onClick={() => {
                       if (packageData) downloadSddZipBundle(packageData)
@@ -1339,6 +1579,24 @@ export const VisualWorkflowPage: React.FC = () => {
                     </div>
                     <p className="text-xs text-slate-500 dark:text-zinc-400 mt-1.5 font-medium">
                       Standalone Model Context Protocol server exposing your spec to AI editors.
+                    </p>
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      if (packageData) downloadEnvExample(packageData)
+                      else setErrorMessage('Please synthesize blueprints in Stage 4 first.')
+                    }}
+                    className="p-4 rounded-xl border border-slate-200/70 dark:border-zinc-800 bg-white/80 dark:bg-zinc-950 hover:border-teal-500 text-left transition-all cursor-pointer group shadow-[0_1px_6px_rgba(0,0,0,0.02)] dark:shadow-none"
+                  >
+                    <div className="flex items-center gap-2">
+                      <FileCode className="w-5 h-5 text-teal-500" />
+                      <h5 className="text-sm font-bold text-slate-900 dark:text-white group-hover:text-teal-500">
+                        Download .env.example
+                      </h5>
+                    </div>
+                    <p className="text-xs text-slate-500 dark:text-zinc-400 mt-1.5 font-medium">
+                      Cloud hosting blueprint, database URLs, auth secrets, and R2 bucket configuration.
                     </p>
                   </button>
                 </div>

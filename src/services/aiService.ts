@@ -44,17 +44,59 @@ export async function synthesizeSddPackage(
     // Simulate brief asynchronous synthesis progress
     await new Promise(resolve => setTimeout(resolve, 800))
 
+    const platformTarget = input.platformTarget || 'web-portal'
+    const techStack = input.techStack || 'stack-agnostic'
+    const enableRtl = input.enableRtlMultilingual || false
+
     return {
       ...matched,
       id: `sdd-${Date.now()}`,
       createdAt: new Date().toISOString(),
       domain: input.domain,
       targetDepth: input.targetDepth,
+      jurisdiction: input.jurisdiction || 'Global Baseline (Default)',
+      platformTarget,
+      techStack,
+      enableRtlMultilingual: enableRtl,
+      companyStructure: input.companyStructure,
       originalPrompt: input.requirement || matched.originalPrompt,
       constitution: {
         ...matched.constitution,
         technicalConstraints: [
           ...matched.constitution.technicalConstraints,
+          ...(platformTarget === 'mobile-app'
+            ? [
+                {
+                  category: 'Frameworks & Libraries' as const,
+                  rule: 'Mobile Native Architecture: Offline-first persistence via SQLite/MMKV, push notification token lifecycle (APNs/FCM), FaceID/Biometrics authentication, and minimum 48x48px WCAG touch targets.',
+                  rationale: 'Mandatory cross-platform mobile app usability and offline resilience.'
+                }
+              ]
+            : [
+                {
+                  category: 'Frameworks & Libraries' as const,
+                  rule: 'Web Portal Performance & SEO: Mandatory Core Web Vitals (<1.2s LCP, <100ms INP, 0 CLS), OpenGraph metadata, JSON-LD structured schemas, and CDN edge cache-control headers.',
+                  rationale: 'Public discoverability, organic search ranking, and instant first-contentful paint.'
+                }
+              ]),
+          ...(techStack !== 'stack-agnostic'
+            ? [
+                {
+                  category: 'Frameworks & Libraries' as const,
+                  rule: `Enforced Tech Stack (${techStack}): AI agents must strictly build on the designated stack. If Next.js + shadcn/ui is selected, only import components from @/components/ui; never write ad-hoc CSS classes or install rogue UI libraries.`,
+                  rationale: 'Strict UI consistency and prevention of dependency sprawl.'
+                }
+              ]
+            : []),
+          ...(enableRtl
+            ? [
+                {
+                  category: 'Frameworks & Libraries' as const,
+                  rule: 'Multilingual & Bidirectional RTL Invariant: Enforce dir="rtl" support, CSS Logical Properties (ms-, me-, ps-, pe-, start-, end- instead of left/right), and Google Noto Naskh Arabic / Noto Nastaliq Urdu font fallbacks.',
+                  rationale: 'First-class localized user experience for Arabic and Urdu speaking populations.'
+                }
+              ]
+            : []),
           ...(input.brownfieldAssets
             ? [{
                 category: 'Database & Storage' as const,
@@ -98,10 +140,16 @@ export async function synthesizeSddPackage(
   }
 
   const chosenJurisdiction = input.jurisdiction || 'Global Baseline (Default)'
+  const platformTarget = input.platformTarget || 'web-portal'
+  const techStack = input.techStack || 'stack-agnostic'
+  const enableRtl = input.enableRtlMultilingual || false
 
   const userPrompt = `Synthesize an enterprise-grade 4-Pillar SDD specification package for the following initiative:
 
 INITIATIVE DOMAIN: ${input.domain}
+PLATFORM DELIVERY TARGET: ${platformTarget} (e.g. web-portal, mobile-app, saas-web, e-commerce)
+PREFERRED TECH STACK: ${techStack}
+MULTILINGUAL & RTL SUPPORT: ${enableRtl ? 'ENABLED (Arabic, Urdu, English i18n + CSS Logical Properties)' : 'STANDARD LTR'}
 TARGET REGULATORY & CYBERSECURITY JURISDICTION: ${chosenJurisdiction}
 RIGOR / TARGET DEPTH: ${input.targetDepth}
 
@@ -111,13 +159,23 @@ ${decisionsBlock}
 ${brownfieldBlock}
 ${companyStructureBlock}
 
-MANDATORY CYBERSECURITY DIRECTIVES:
+MANDATORY ARCHITECTURAL DIRECTIVES:
 1. Automatically formulate and inject an explicit STRIDE Threat Modeling Matrix table inside constitution.strideThreatMatrix (Spoofing, Tampering, Repudiation, Information Disclosure, Denial of Service, Elevation of Privilege) with concrete architectural mitigations.
 2. In constitution.technicalConstraints, strictly enforce the Approved Ecosystem Packages (Anti-Slopsquatting) invariant:
    - Auth: Native jose or @auth/core
    - Database: Parameterized queries or approved ORM (@prisma/client, drizzle-orm). Raw SQL concatenation is forbidden.
    - Crypto: Web Crypto API or Node native crypto only.
-3. In constitution.securityInvariants, inject non-negotiable legal and regulatory controls reflecting ${chosenJurisdiction}.
+3. PLATFORM & STACK DIRECTIVES:
+   ${platformTarget === 'mobile-app' ? '- Mandate offline-first persistence (SQLite/MMKV), push notification lifecycle (APNs/FCM), FaceID/Biometrics, and 48x48px WCAG tap targets.' : '- Mandate Core Web Vitals (<1.2s LCP), SEO OpenGraph metadata, JSON-LD schemas, and CDN edge cache headers.'}
+   ${techStack !== 'stack-agnostic' ? `- Strictly bind implementation tasks to ${techStack}. If using Next.js + shadcn/ui, only use components from @/components/ui; never write ad-hoc CSS classes or unvetted UI libraries.` : ''}
+   ${enableRtl ? '- Inject mandatory dir="rtl" support, CSS logical properties (ms-, me-, ps-, pe-), and Google Noto Naskh Arabic / Noto Nastaliq Urdu typography.' : ''}
+4. CLOUD & HOSTING BLUEPRINT (in governance.executiveStatusReport):
+   - Include a dedicated section detailing the "Recommended Zero/Low-Cost Production Hosting Blueprint":
+     * Frontend/Web: Vercel / Cloudflare Pages
+     * Database: Supabase / Neon Serverless PostgreSQL
+     * Media/Video: Cloudflare R2 (zero egress fees) / Mux
+     * Mobile: Expo Application Services (EAS) for iOS TestFlight & Android Play Store.
+5. In constitution.securityInvariants, inject non-negotiable legal and regulatory controls reflecting ${chosenJurisdiction}.
 
 Generate the complete JSON object including constitution, functionalSpec, taskGraph, governance, and architectureDiagrams.`
 
@@ -376,6 +434,63 @@ function formatSddArtifactPackage(parsed: Record<string, unknown>, input: Requir
     })
   }
 
+  // Inject Platform & Tech Stack Invariants if not already present
+  const platformTarget = input.platformTarget || 'web-portal'
+  const techStack = input.techStack || 'stack-agnostic'
+  const enableRtl = input.enableRtlMultilingual || false
+
+  if (platformTarget === 'mobile-app') {
+    const hasMobile = constitution.technicalConstraints.some(c => c.rule.toLowerCase().includes('mobile native architecture') || c.rule.toLowerCase().includes('sqlite/mmkv'))
+    if (!hasMobile) {
+      constitution.technicalConstraints.push({
+        category: 'Frameworks & Libraries',
+        rule: 'Mobile Native Architecture: Offline-first persistence via SQLite/MMKV, push notification token lifecycle (APNs/FCM), FaceID/Biometrics authentication, and minimum 48x48px WCAG touch targets.',
+        rationale: 'Mandatory cross-platform mobile app usability and offline resilience.'
+      })
+    }
+  } else {
+    const hasWeb = constitution.technicalConstraints.some(c => c.rule.toLowerCase().includes('web portal performance') || c.rule.toLowerCase().includes('core web vitals'))
+    if (!hasWeb) {
+      constitution.technicalConstraints.push({
+        category: 'Frameworks & Libraries',
+        rule: 'Web Portal Performance & SEO: Mandatory Core Web Vitals (<1.2s LCP, <100ms INP, 0 CLS), OpenGraph metadata, JSON-LD structured schemas, and CDN edge cache-control headers.',
+        rationale: 'Public discoverability, organic search ranking, and instant first-contentful paint.'
+      })
+    }
+  }
+
+  if (techStack !== 'stack-agnostic') {
+    const hasStack = constitution.technicalConstraints.some(c => c.rule.includes(techStack))
+    if (!hasStack) {
+      constitution.technicalConstraints.push({
+        category: 'Frameworks & Libraries',
+        rule: `Enforced Tech Stack (${techStack}): AI agents must strictly build on the designated stack. If Next.js + shadcn/ui is selected, only import components from @/components/ui; never write ad-hoc CSS classes or install rogue UI libraries.`,
+        rationale: 'Strict UI consistency and prevention of dependency sprawl.'
+      })
+    }
+  }
+
+  if (enableRtl) {
+    const hasRtl = constitution.technicalConstraints.some(c => c.rule.toLowerCase().includes('multilingual & bidirectional rtl invariant'))
+    if (!hasRtl) {
+      constitution.technicalConstraints.push({
+        category: 'Frameworks & Libraries',
+        rule: 'Multilingual & Bidirectional RTL Invariant: Enforce dir="rtl" support, CSS Logical Properties (ms-, me-, ps-, pe-, start-, end- instead of left/right), and Google Noto Naskh Arabic / Noto Nastaliq Urdu font fallbacks.',
+        rationale: 'First-class localized user experience for Arabic and Urdu speaking populations.'
+      })
+    }
+  }
+
+  // Ensure Recommended Zero/Low-Cost Production Hosting Blueprint is in governance.executiveStatusReport
+  if (!governance.executiveStatusReport.includes('Recommended Zero/Low-Cost Production Hosting Blueprint')) {
+    governance.executiveStatusReport += `\n\n### 🌐 Recommended Zero/Low-Cost Production Hosting Blueprint
+- **Frontend / Edge Delivery:** Vercel (Edge Network) or Cloudflare Pages (Unlimited bandwidth, global CDN).
+- **Relational Database:** Supabase or Neon Serverless PostgreSQL (Automated branching, row-level security).
+- **Blob & Video Storage:** Cloudflare R2 (Zero egress bandwidth fees, S3 API compatible) or Mux (for adaptive HLS video streaming).
+- **Mobile Deployment (if applicable):** Expo Application Services (EAS Build & Submit) for automated iOS TestFlight and Android Google Play internal tracks.
+- **CI/CD Quality Guardrails:** GitHub Actions running \`.github/workflows/sdd-verify.yml\` with zero cost on public repos.`
+  }
+
   // Check if LLM returned valid architectureDiagrams
   const parsedDiagrams = parsed.architectureDiagrams as SddArtifactPackage['architectureDiagrams'] | undefined
   const hasValidDiagrams =
@@ -396,6 +511,10 @@ function formatSddArtifactPackage(parsed: Record<string, unknown>, input: Requir
     domain: input.domain,
     targetDepth: input.targetDepth,
     jurisdiction: input.jurisdiction || 'Global Baseline (Default)',
+    platformTarget,
+    techStack,
+    enableRtlMultilingual: enableRtl,
+    companyStructure: input.companyStructure,
     originalPrompt: input.requirement,
     constitution,
     functionalSpec,

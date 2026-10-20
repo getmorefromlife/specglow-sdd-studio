@@ -323,6 +323,22 @@ export const DOMAIN_CATEGORIES: DomainCategory[] = [
       { id: 'ecommerce-omni', name: 'High-Volume Omnichannel E-Commerce', compliance: 'PCI-DSS, CCPA, Inventory Locks' },
       { id: 'iot-telemetry', name: 'Industrial IoT & Sensor Telemetry', compliance: 'MQTT TLS, Edge Buffering' }
     ]
+  },
+  {
+    category: 'Education, EdTech & LMS',
+    icon: '🎓',
+    subdomains: [
+      { id: 'edtech-lms', name: 'EdTech / Video LMS & Course Delivery', compliance: 'FERPA, COPPA, SCORM / xAPI' },
+      { id: 'interactive-quiz', name: 'Interactive Quiz & Proctoring Engine', compliance: 'WCAG 2.1 AA, Anti-Cheating Invariants' }
+    ]
+  },
+  {
+    category: 'Ethical, Community & Non-Profit',
+    icon: '🤝',
+    subdomains: [
+      { id: 'community-portal', name: 'Ethical / Faith-Based Knowledge & Community Portal', compliance: 'GDPR Donor Privacy, Multilingual RTL' },
+      { id: 'charity-donations', name: 'Non-Profit / NGO Transparent Aid Allocation', compliance: 'Zero-Egress Auditing, Micro-Grants' }
+    ]
   }
 ]
 

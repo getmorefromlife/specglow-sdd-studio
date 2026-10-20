@@ -19,9 +19,10 @@ import {
   ShieldCheck,
   Globe,
   X,
-  Clock
+  Clock,
+  Languages
 } from 'lucide-react'
-import type { TargetDepth, RequirementInput, ComposerItem, SddArtifactPackage, RegulatoryJurisdiction, SavedInitiativeSummary } from '../types'
+import type { TargetDepth, RequirementInput, ComposerItem, SddArtifactPackage, RegulatoryJurisdiction, SavedInitiativeSummary, PlatformTarget, TechStackPreset } from '../types'
 import { SAMPLE_INITIATIVES, DOMAIN_CATEGORIES, REGULATORY_JURISDICTIONS } from '../utils/constants'
 import { getAllSavedInitiatives, deleteInitiativeFromDb } from '../utils/storageUtils'
 import { PrdComposer } from './PrdComposer'
@@ -741,6 +742,67 @@ export const InputWorkspace: React.FC<InputWorkspaceProps> = ({
                   </button>
                 ))}
               </div>
+            </div>
+          </div>
+
+          {/* Sub-row: Platform Target, Tech Stack Preset & RTL Toggle */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-3 border-t border-slate-100 dark:border-zinc-800/80">
+            {/* Platform Target */}
+            <div>
+              <label className="text-[11px] font-bold uppercase tracking-wider text-slate-800 dark:text-zinc-300 mb-1.5 flex items-center gap-1.5">
+                <Globe className="w-3 h-3 text-cyan-600 dark:text-cyan-400" />
+                <span>Platform Target</span>
+              </label>
+              <select
+                value={input.platformTarget || 'web-portal'}
+                onChange={e => onChange({ ...input, platformTarget: e.target.value as PlatformTarget })}
+                className="w-full px-3 py-1.5 text-xs rounded-lg border font-semibold bg-slate-50 dark:bg-zinc-950 border-slate-300 dark:border-zinc-800 text-slate-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 cursor-pointer"
+              >
+                <option value="web-portal">🌐 Web Portals & Modern Web Apps</option>
+                <option value="mobile-app">📱 Mobile iOS & Android Apps</option>
+                <option value="saas-web">🏢 Enterprise B2B SaaS</option>
+                <option value="e-commerce">🛍️ High-Volume Commerce</option>
+              </select>
+            </div>
+
+            {/* Preferred Tech Stack */}
+            <div>
+              <label className="text-[11px] font-bold uppercase tracking-wider text-slate-800 dark:text-zinc-300 mb-1.5 flex items-center gap-1.5">
+                <Code2 className="w-3 h-3 text-indigo-600 dark:text-indigo-400" />
+                <span>Preferred Tech Stack & UI</span>
+              </label>
+              <select
+                value={input.techStack || 'nextjs-shadcn'}
+                onChange={e => onChange({ ...input, techStack: e.target.value as TechStackPreset })}
+                className="w-full px-3 py-1.5 text-xs rounded-lg border font-semibold bg-slate-50 dark:bg-zinc-950 border-slate-300 dark:border-zinc-800 text-slate-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 cursor-pointer"
+              >
+                <option value="nextjs-shadcn">Next.js 15 (App Router) + shadcn/ui</option>
+                <option value="astro-content">Astro 5 + Content Collections + Tailwind</option>
+                <option value="react-native">React Native (Expo SDK 52) + NativeWind</option>
+                <option value="flutter-dart">Flutter 3.x + Material 3 + Riverpod</option>
+                <option value="fastapi-react">FastAPI (Python 3.12) + React 19 SPA</option>
+                <option value="stack-agnostic">Stack-Agnostic / AI Standard</option>
+              </select>
+            </div>
+
+            {/* Multilingual / RTL Toggle */}
+            <div className="flex flex-col justify-end">
+              <label className="text-[11px] font-bold uppercase tracking-wider text-slate-800 dark:text-zinc-300 mb-1.5 flex items-center gap-1.5">
+                <Languages className="w-3 h-3 text-purple-600 dark:text-purple-400" />
+                <span>Multilingual & RTL (Arabic / Urdu / English)</span>
+              </label>
+              <button
+                type="button"
+                onClick={() => onChange({ ...input, enableRtlMultilingual: !input.enableRtlMultilingual })}
+                className={`w-full py-1.5 px-3 rounded-lg text-xs font-bold border transition-all flex items-center justify-between cursor-pointer ${
+                  input.enableRtlMultilingual
+                    ? 'bg-purple-50 text-purple-950 border-purple-400 dark:bg-purple-950/60 dark:text-purple-300 dark:border-purple-600 ring-1 ring-purple-500'
+                    : 'bg-slate-50 text-slate-700 border-slate-300 dark:bg-zinc-950 dark:text-zinc-300 dark:border-zinc-800'
+                }`}
+              >
+                <span>{input.enableRtlMultilingual ? 'RTL & i18n Invariants Active' : 'Enable RTL (Arabic / Urdu)'}</span>
+                <span className={`w-2.5 h-2.5 rounded-full ${input.enableRtlMultilingual ? 'bg-purple-600 dark:bg-purple-400' : 'bg-slate-400'}`} />
+              </button>
             </div>
           </div>
         </div>

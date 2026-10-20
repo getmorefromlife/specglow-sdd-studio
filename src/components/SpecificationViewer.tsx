@@ -45,6 +45,7 @@ import {
   generateClaudeMcpCommand,
   generateStandaloneMcpServer,
   downloadMcpServer,
+  downloadEnvExample,
   downloadFile
 } from '../utils/exportUtils'
 
@@ -268,6 +269,16 @@ export const SpecificationViewer: React.FC<SpecificationViewerProps> = ({ packag
               >
                 <Cpu className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400" />
                 <span>mcp-server.js</span>
+              </button>
+
+              {/* .env.example Download */}
+              <button
+                onClick={() => downloadEnvExample(packageData)}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all bg-teal-50 hover:bg-teal-100 border-teal-300 text-teal-900 dark:bg-teal-950/40 dark:hover:bg-teal-900/60 dark:border-teal-800 dark:text-teal-200"
+                title="Download complete production & staging environment configuration (.env.example)"
+              >
+                <FileCode className="w-3.5 h-3.5 text-teal-600 dark:text-teal-400" />
+                <span>.env.example</span>
               </button>
             </div>
 

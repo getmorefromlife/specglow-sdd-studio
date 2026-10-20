@@ -48,15 +48,35 @@ export interface ArchitecturalInterrogationQuestion {
   selectedOptionId?: string
 }
 
+export type PlatformTarget = 
+  | 'web-portal'       // Modern Web Portal & Content Platform (Educational, Ethical, Media, NGO)
+  | 'mobile-app'      // Native / Cross-Platform Mobile App (iOS & Android)
+  | 'saas-web'        // Enterprise Web App & Cloud SaaS (Dashboards, B2B)
+  | 'e-commerce'     // E-Commerce Storefront & Marketplace
+
+export type TechStackPreset = 
+  | 'nextjs-shadcn'   // Next.js (App Router) + Tailwind CSS + shadcn/ui + Supabase
+  | 'astro-content'   // Astro (SSR/SSG) + Tailwind CSS (Ultra-fast Content & Portals)
+  | 'react-native'    // React Native (Expo) + NativeWind + SQLite (iOS & Android)
+  | 'flutter-dart'    // Flutter + Dart + Firebase/Supabase (Cross-Platform Mobile)
+  | 'fastapi-react'   // FastAPI (Python) + React 19 + PostgreSQL
+  | 'stack-agnostic'  // AI Recommended Stack (Default)
+
 export interface RequirementInput {
   requirement: string
   domain: DomainType
   targetDepth: TargetDepth
   jurisdiction?: RegulatoryJurisdiction
+  platformTarget?: PlatformTarget
+  techStack?: TechStackPreset
+  enableRtlMultilingual?: boolean
   architecturalDecisions?: Record<string, string>
   brownfieldAssets?: string
   companyStructure?: string
 }
+
+// Backward-compatible alias for InitiativeInput
+export type InitiativeInput = RequirementInput
 
 export interface AzureDevOpsWorkItem {
   id?: string
@@ -250,6 +270,10 @@ export interface SddArtifactPackage {
   domain: DomainType
   targetDepth: TargetDepth
   jurisdiction?: RegulatoryJurisdiction
+  platformTarget?: PlatformTarget
+  techStack?: TechStackPreset
+  enableRtlMultilingual?: boolean
+  companyStructure?: string
   originalPrompt: string
   brownfieldAssets?: string
   constitution: ProjectConstitution

@@ -136,6 +136,86 @@ export const DOMAIN_FALLBACK_QUESTIONS: Record<string, ArchitecturalInterrogatio
       ]
     }
   ],
+  edtech: [
+    {
+      id: 'q-edtech-1',
+      category: 'Telemetry & Learning Analytics Standard',
+      question: 'What standard will govern student activity telemetry and progress tracking?',
+      context: 'FERPA and COPPA mandate strict student privacy, while institutional LMS platforms demand SCORM/xAPI interoperability.',
+      options: [
+        {
+          id: 'opt-edtech-1a',
+          label: 'xAPI (Experience API / Tin Can) with Dedicated Learning Record Store (LRS)',
+          implication: 'Industry-standard fine-grained telemetry; supports offline mobile sync and statement signing.',
+          isRecommended: true
+        },
+        {
+          id: 'opt-edtech-1b',
+          label: 'Internal Event-Driven Kafka Stream with Materialized Student Dashboards',
+          implication: 'Maximum low-latency throughput; requires custom connector adaptors for third-party LMS integration.'
+        }
+      ]
+    },
+    {
+      id: 'q-edtech-2',
+      category: 'Video & Interactive Media Delivery',
+      question: 'How should high-bandwidth video lectures and interactive course assets be streamed?',
+      context: 'Global student bandwidth varies significantly, while intellectual property must be protected from scraping.',
+      options: [
+        {
+          id: 'opt-edtech-2a',
+          label: 'Adaptive Bitrate HLS / DASH via Edge Cloudflare Stream with DRM Tokenization',
+          implication: 'Zero buffer lag across 3G/4G networks; defends video content against unauthorized downloaders.',
+          isRecommended: true
+        },
+        {
+          id: 'opt-edtech-2b',
+          label: 'Pre-Signed Object Storage URLs (Cloudflare R2 / S3) with Direct MP4 Streaming',
+          implication: 'Minimal operational cost; vulnerable to stream link sharing and lacks adaptive bandwidth transcoding.'
+        }
+      ]
+    }
+  ],
+  'ethical-community': [
+    {
+      id: 'q-ethical-1',
+      category: 'Identity Privacy & Anonymity Bounds',
+      question: 'How will member identity, whistleblowing, and sensitive disclosures be safeguarded?',
+      context: 'Community and mutual aid platforms require high psychological safety without storing vulnerable user data.',
+      options: [
+        {
+          id: 'opt-eth-1a',
+          label: 'Zero-Knowledge Pseudonymous DIDs with Ephemeral Cryptographic Signatures',
+          implication: 'Guarantees that database compromises cannot de-anonymize community activists or vulnerable members.',
+          isRecommended: true
+        },
+        {
+          id: 'opt-eth-1b',
+          label: 'Hashed Salted Identifiers with Automated 30-Day Hard PURGE Database Schedules',
+          implication: 'Simpler relational architecture; temporary identity correlation window exists prior to purge cycle.'
+        }
+      ]
+    },
+    {
+      id: 'q-ethical-2',
+      category: 'Content Moderation & Reputation Governance',
+      question: 'What mechanism governs community moderation and abusive content filtering?',
+      context: 'Centralized admin queues risk bias, while automated moderation can silence marginalized voices.',
+      options: [
+        {
+          id: 'opt-eth-2a',
+          label: 'Decentralized Multi-Signature Community Consensus Flagging with Appeal Escrow',
+          implication: 'High community trust and transparent governance; requires active quorum for dispute resolution.',
+          isRecommended: true
+        },
+        {
+          id: 'opt-eth-2b',
+          label: 'Zero-Retention Client-Side Machine Moderation with Private Flag Reporting',
+          implication: 'Instantaneous abuse triage; potential false positives requiring manual curator intervention.'
+        }
+      ]
+    }
+  ],
   default: [
     {
       id: 'q-default-1',
@@ -388,6 +468,10 @@ export async function generateInterrogationQuestions(
       questions = [...DOMAIN_FALLBACK_QUESTIONS['fintech']]
     } else if (domainLower.includes('health') || domainLower.includes('hipaa') || domainLower.includes('telehealth') || domainLower.includes('ehr')) {
       questions = [...DOMAIN_FALLBACK_QUESTIONS['healthcare']]
+    } else if (domainLower.includes('edtech') || domainLower.includes('education') || domainLower.includes('lms') || domainLower.includes('ferpa') || domainLower.includes('xapi')) {
+      questions = [...DOMAIN_FALLBACK_QUESTIONS['edtech']]
+    } else if (domainLower.includes('ethical') || domainLower.includes('community') || domainLower.includes('non-profit') || domainLower.includes('decentralized')) {
+      questions = [...DOMAIN_FALLBACK_QUESTIONS['ethical-community']]
     }
 
     // Prepend the mandatory jurisdictional dilemma
@@ -409,10 +493,15 @@ Inspect the following software initiative and generate 3 to 4 critical, high-imp
 INITIATIVE DOMAIN: ${input.domain}
 TARGET REGULATORY JURISDICTION: ${chosenJurisdiction}
 RIGOR DEPTH: ${input.targetDepth}
+PLATFORM TARGET: ${input.platformTarget || 'web-portal'}
+PREFERRED TECH STACK: ${input.techStack || 'nextjs-shadcn'}
+MULTILINGUAL / RTL SUPPORT: ${input.enableRtlMultilingual ? 'Required (Arabic / Urdu / English i18n & RTL layouts)' : 'Standard LTR'}
 MANDATORY REQUIREMENT: Formulate at least 1 dilemma directly resolving legal, data sovereignty, or compliance requirements for ${chosenJurisdiction}.
+${input.platformTarget === 'mobile-app' ? 'PLATFORM REQUIREMENT: Include at least 1 dilemma addressing mobile offline-first synchronization, local SQLite caching, or push notifications (APNs/FCM).\n' : ''}
+${input.platformTarget === 'web-portal' ? 'PLATFORM REQUIREMENT: Include at least 1 dilemma addressing content ingestion, SEO Core Web Vitals, or Headless CMS vs Edge SSR.\n' : ''}
 
 INITIATIVE BRIEF:
-${input.requirement}${input.brownfieldAssets?.trim() ? `\n\nEXISTING BROWNFIELD ASSETS / SCHEMAS:\n${input.brownfieldAssets.trim()}\nFormulate dilemmas specifically addressing backward compatibility, schema migrations, and breaking changes against these brownfield assets.` : ''}
+${input.requirement}${input.brownfieldAssets?.trim() ? '\n\nEXISTING BROWNFIELD ASSETS / SCHEMAS:\n' + input.brownfieldAssets.trim() + '\nFormulate dilemmas specifically addressing backward compatibility, schema migrations, and breaking changes against these brownfield assets.' : ''}
 
 FORMAT REQUIREMENT: Return ONLY a valid JSON array of objects conforming to this exact TypeScript schema:
 [
