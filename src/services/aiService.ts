@@ -90,6 +90,13 @@ export async function synthesizeSddPackage(
       `CRITICAL BROWNFIELD DIRECTIVE: Do NOT design in a vacuum. Your Project Constitution, API Contracts, Database Models, and Task Graph MUST directly integrate with, extend, and respect these existing schemas, dependencies, and architectural patterns. Preserve existing entity names and ORM structures.`
   }
 
+  let companyStructureBlock = ''
+  if (input.companyStructure && input.companyStructure.trim()) {
+    companyStructureBlock = `\nINTERNAL COMPANY STRUCTURE & TEAM TOPOLOGY (CONWAY'S LAW INVARIANTS):\n` +
+      `${input.companyStructure.trim()}\n` +
+      `MANDATORY TEAM DIRECTIVE: Structure tasks.md implementation phases, component ownership, and architectural boundaries to match this team topology and governance model.`
+  }
+
   const chosenJurisdiction = input.jurisdiction || 'Global Baseline (Default)'
 
   const userPrompt = `Synthesize an enterprise-grade 4-Pillar SDD specification package for the following initiative:
@@ -102,6 +109,7 @@ INITIATIVE / FEATURE DESCRIPTION:
 ${input.requirement}
 ${decisionsBlock}
 ${brownfieldBlock}
+${companyStructureBlock}
 
 MANDATORY CYBERSECURITY DIRECTIVES:
 1. Automatically formulate and inject an explicit STRIDE Threat Modeling Matrix table inside constitution.strideThreatMatrix (Spoofing, Tampering, Repudiation, Information Disclosure, Denial of Service, Elevation of Privilege) with concrete architectural mitigations.

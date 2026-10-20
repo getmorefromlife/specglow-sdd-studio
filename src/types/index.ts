@@ -55,6 +55,7 @@ export interface RequirementInput {
   jurisdiction?: RegulatoryJurisdiction
   architecturalDecisions?: Record<string, string>
   brownfieldAssets?: string
+  companyStructure?: string
 }
 
 export interface AzureDevOpsWorkItem {

@@ -53,6 +53,13 @@ Tailor every synthesized specification to jurisdictional mandates across 7 disti
 ### 5. 🔌 SpecGlow MCP Bridge (`specglow-mcp.json` & `mcp-server.js`)
 - Model Context Protocol stdio server allowing Claude Code CLI, Cursor, and Windsurf to query constitution invariants, functional specs, task graphs, and validate code patches directly against architectural rules.
 
+### 6. 🏗️ Guided Skyscraper Blueprint Journey (5-Stage Studio Experience)
+- **Stage 1 (Tell Your Vision):** Plain-English intake with 12+ battle-tested starter blueprints across 8 industries (*FinTech, Healthcare, AI Agents, E-Commerce, Security, Supply Chain, GovTech*).
+- **Stage 2 (Set The Boundaries):** 6 core regulatory archetypes + 16-framework compliance taxonomy + Conway's Law Team Delivery Topology selector (*Single Squad, Domain Pods, Hub-and-Spoke, Regulated ARB*).
+- **Stage 3 (The Architect's Interview):** The "Grill-Me" discovery loop solving architectural dilemmas with 1-click recommended enterprise defaults.
+- **Stage 4 (The 4-Pillar Master Blueprint):** Live AI or instant offline synthesis generating `constitution.md`, `spec.md`, `tasks.md`, `governance.md`, and C4 Mermaid diagrams.
+- **Stage 5 (Hand to the Builders):** 1-click prompts for Cursor, Claude 3.5 Sonnet, and AGENTS.md, Jira CSV export, and synthetic Monte Carlo simulation.
+
 ---
 
 ## 🏛️ The 4-Pillar SDD Architecture
