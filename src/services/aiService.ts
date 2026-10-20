@@ -469,6 +469,18 @@ function formatSddArtifactPackage(parsed: Record<string, unknown>, input: Requir
     ]
   }
 
+  // Anchor Aligile Ethical Delivery Invariant in technicalConstraints
+  const hasAligileConstraint = constitution.technicalConstraints.some(
+    c => c.rule.toLowerCase().includes('wisdom before prescription') || c.rule.toLowerCase().includes('aligile')
+  )
+  if (!hasAligileConstraint) {
+    constitution.technicalConstraints.unshift({
+      category: 'Forbidden Packages / Patterns',
+      rule: 'Wisdom Before Prescription (Aligile Ethos): Architecture and deterministic specifications must strictly precede code generation. AI coding agents are strictly forbidden from writing unverified ad-hoc code without boundary contracts and constitution checks.',
+      rationale: 'Process without architectural purpose is waste. Agility without wisdom is motion without meaning.'
+    })
+  }
+
   // Ensure Anti-Slopsquatting Approved Packages invariant is explicitly in technicalConstraints
   const hasWhitelistConstraint = constitution.technicalConstraints.some(
     c => c.rule.toLowerCase().includes('approved ecosystem packages') || c.rule.toLowerCase().includes('slopsquatting')

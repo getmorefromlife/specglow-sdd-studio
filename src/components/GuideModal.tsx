@@ -368,6 +368,47 @@ export const GuideModal: React.FC<GuideModalProps> = ({ isOpen, onClose }) => {
               <li><strong>Download Complete SDD Bundle (.zip):</strong> In-memory PKZIP archive bundling all 18+ documentation, contract, test suite, agent rules, MCP server, .env.example, and diagram files.</li>
             </ul>
           </div>
+
+          {/* Ethical Foundations & Aligile Ethos */}
+          <div className="p-4 rounded-xl border border-cyan-500/30 dark:border-cyan-500/30 bg-gradient-to-r from-cyan-500/5 via-indigo-500/5 to-transparent space-y-2.5">
+            <div className="flex items-center gap-2.5">
+              <span className="w-7 h-7 rounded-full bg-cyan-600/20 text-cyan-700 dark:text-cyan-300 font-bold text-xs flex items-center justify-center shrink-0 border border-cyan-500/30">
+                🌿
+              </span>
+              <div>
+                <h3 className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                  <span>Ethical Foundation: Why SpecGlow is 100% Free for Mankind</span>
+                  <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-cyan-100 dark:bg-cyan-950 text-cyan-800 dark:text-cyan-300 border border-cyan-300 dark:border-cyan-800">
+                    Aligile Ethos
+                  </span>
+                </h3>
+              </div>
+            </div>
+            <p className="text-xs text-slate-600 dark:text-zinc-300 leading-relaxed ml-9 italic">
+              "Wisdom before prescription. Truth over assumptions. Systems above ego."
+            </p>
+            <p className="text-xs text-slate-600 dark:text-zinc-400 leading-relaxed ml-9">
+              SpecGlow SDD Studio is offered 100% free with zero tracking and zero telemetry because it is grounded in the{' '}
+              <a
+                href="https://getmorefromlife.github.io/aligile/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-semibold text-cyan-600 dark:text-cyan-400 underline underline-offset-2 hover:text-cyan-500"
+              >
+                Aligile philosophy
+              </a>
+              —a delivery mindset formulated by Syed Imon Rizvi inspired by timeless ethical wisdom. We believe quality software architecture, rigorous contracts, and delivery governance should be an open public benefit accessible to every developer and team worldwide. For enterprise transformations and advisory, consult{' '}
+              <a
+                href="https://www.mercerandmills.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-semibold text-indigo-600 dark:text-indigo-400 underline underline-offset-2 hover:text-indigo-500"
+              >
+                Mercer and Mills
+              </a>
+              .
+            </p>
+          </div>
         </div>
 
 

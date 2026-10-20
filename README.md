@@ -7,7 +7,9 @@
 ---
 
 [![License: Apache-2.0](https://img.shields.io/badge/License-Apache--2.0-blue.svg)](LICENSE)
-[![Release](https://img.shields.io/badge/Release-v3.1%20Enterprise-emerald.svg)](package.json)
+[![Release](https://img.shields.io/badge/Release-v3.2%20Enterprise-emerald.svg)](package.json)
+[![Philosophy: Aligile](https://img.shields.io/badge/Philosophy-Aligile%20Ethos-06b6d4?style=flat-square)](https://getmorefromlife.github.io/aligile/)
+[![Advisory: Mercer and Mills](https://img.shields.io/badge/Advisory-Mercer%20%26%20Mills-6366f1?style=flat-square)](https://www.mercerandmills.com)
 [![React](https://img.shields.io/badge/React-19-61dafb.svg)](https://react.dev)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.x-blue.svg)](https://www.typescriptlang.org)
 [![Tailwind CSS](https://img.shields.io/badge/TailwindCSS-v4-38bdf8.svg)](https://tailwindcss.com)
@@ -21,6 +23,33 @@
 Modern enterprise software engineering is fundamentally evolving from ad-hoc, hallucination-prone prompting to **Spec-Driven Development (SDD)**. Autonomous AI coding agents (Claude Code, Antigravity, Cursor, Devin) and multi-disciplinary distributed teams require deterministic architectural boundaries, zero-trust security invariants, and explicit dependency graphs to ship mission-critical software safely.
 
 **SpecGlow SDD Studio** transforms feature briefs, requirements, and voice recordings into a comprehensive, machine-executable **Agent-Native SDD Delivery & Governance Suite** tailored to major global markets (US, EU, GCC, ANZ, APAC, and Pakistan).
+
+---
+
+## 🌿 The Ecosystem & Ethical Foundation (The Aligile Ethos)
+
+SpecGlow SDD Studio is built upon an interconnected tripartite mission formulated by **Syed Imon Rizvi**:
+
+```
+                          [ ⚖️ ALIGILE ]
+                     The Soul & Philosophy
+            "Agility with Wisdom, Justice & Integrity"
+              (Why SpecGlow is a Free Gift to Mankind)
+                           /          \
+                          /            \
+                         /              \
+                        /                \
+      [ ⚡ SPECGLOW SDD STUDIO ]  ◄───────►  [ 🏛️ MERCER & MILLS ]
+        The Free Public Platform                The Enterprise Advisory
+     (100% Client-Side, Open-Source)          (Paid Architecture & Delivery)
+```
+
+1. **The Ethos — [Aligile](https://getmorefromlife.github.io/aligile/):**  
+   *Agility with Wisdom, Justice, and Integrity.* Inspired by timeless ethical wisdom, Aligile establishes that *"Agility without wisdom is motion without meaning."* It rejects superficial checkbox agile in favor of architectural reflection, consultative guidance, holding commitments with moral weight, and putting systems above ego.
+2. **The Public Service — [SpecGlow SDD Studio](https://specglow-sdd-studio.vercel.app):**  
+   Offered **100% free with zero cost, zero telemetry, and zero tracking** as a public benefit for software engineers, startups, and engineering teams worldwide. SpecGlow embodies the Aligile principle of *Meaningful Action*—delivering outward good and eliminating AI context collapse through rigorous upfront blueprints.
+3. **The Enterprise Advisory — [Mercer & Mills](https://www.mercerandmills.com):**  
+   Principal solutions architecture, mission-critical fintech platform delivery (Temenos, SAP, cloud-native), and scaled agile transformation consulting for global enterprise organizations.
 
 ---
 
@@ -251,8 +280,14 @@ This project is licensed under the **Apache-2.0 License** — see the [LICENSE](
 
 **Created by:**  
 **Syed Imon Rizvi (Mercer and Mills)**  
-- 🌐 **Website:** [www.mercerandmills.com](https://www.mercerandmills.com)  
+- 🌐 **Advisory Website:** [www.mercerandmills.com](https://www.mercerandmills.com)  
+- ⚖️ **Philosophical Foundation:** [Aligile Ethos](https://getmorefromlife.github.io/aligile/)  
 - 💼 **LinkedIn:** [https://www.linkedin.com/in/syedimonrizvi](https://www.linkedin.com/in/syedimonrizvi)  
 - ✉️ **Contact:** [contact@mercerandmills.com](mailto:contact@mercerandmills.com)  
+
+**The Ecosystem Triangle:**
+* ⚖️ **The Ethos (Aligile):** [https://getmorefromlife.github.io/aligile/](https://getmorefromlife.github.io/aligile/)
+* ⚡ **The Free Spec-Driven Platform (SpecGlow):** [https://specglow-sdd-studio.vercel.app](https://specglow-sdd-studio.vercel.app)
+* 🏛️ **The Enterprise Advisory (Mercer & Mills):** [https://www.mercerandmills.com](https://www.mercerandmills.com)
 
 *Enterprise Solutions Architect & Agile Delivery Governance Leader*

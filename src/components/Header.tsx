@@ -62,7 +62,16 @@ export const Header: React.FC<HeaderProps> = ({ onOpenSettings, onOpenGuide }) =
                 >
                   Syed Imon Rizvi (Mercer and Mills)
                 </a>{' '}
-                • Licensed under Apache-2.0
+                • Grounded in the{' '}
+                <a
+                  href="https://getmorefromlife.github.io/aligile/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="font-semibold text-cyan-700 dark:text-cyan-300 hover:underline underline-offset-2 transition-colors"
+                >
+                  Aligile Ethos
+                </a>{' '}
+                • Apache-2.0
               </p>
             </div>
           </div>
