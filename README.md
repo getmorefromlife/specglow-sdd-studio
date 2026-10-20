@@ -1,4 +1,4 @@
-# 🚀 SpecGlow SDD Studio (v3.0 Enterprise Release)
+# 🚀 SpecGlow SDD Studio (v3.1 Enterprise Release)
 ### Enterprise Agentic Spec-Driven Development & Delivery Governance Engine
 
 > **Created by Syed Imon Rizvi (Mercer and Mills) — Free & Open Source for Global IT Consultancies & Enterprise Teams.**  
@@ -7,7 +7,7 @@
 ---
 
 [![License: Apache-2.0](https://img.shields.io/badge/License-Apache--2.0-blue.svg)](LICENSE)
-[![Release](https://img.shields.io/badge/Release-v3.0%20Enterprise-emerald.svg)](package.json)
+[![Release](https://img.shields.io/badge/Release-v3.1%20Enterprise-emerald.svg)](package.json)
 [![React](https://img.shields.io/badge/React-19-61dafb.svg)](https://react.dev)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.x-blue.svg)](https://www.typescriptlang.org)
 [![Tailwind CSS](https://img.shields.io/badge/TailwindCSS-v4-38bdf8.svg)](https://tailwindcss.com)
@@ -24,9 +24,38 @@ Modern enterprise software engineering is fundamentally evolving from ad-hoc, ha
 
 ---
 
-## 🌟 What's New in v3.0 Enterprise Release
+## 🌟 What's New in v3.1 Enterprise Release
 
-### 1. 🌐 6-Region Regulatory & Compliance Matrix
+### 1. 🌐 Platform Target Runtime Architecture
+Enforce platform-native UX invariants, viewport responsiveness, touch target thresholds, and caching boundaries tailored directly to your target deployment environment:
+- **Web Portals & Apps:** Next.js 15 App Router, Server-Side Rendering (SSR), edge caching, and SEO optimization.
+- **Mobile iOS & Android:** React Native (Expo SDK 52), offline SQLite persistence, 48px touch targets, and native push credentials.
+- **Enterprise B2B SaaS:** Multi-tenant organization isolation, granular RBAC (Row-Level Security), and subscription billing rails.
+- **High-Volume E-Commerce:** Sub-second catalog caching, distributed Redis inventory locking, and idempotent checkout webhooks.
+
+### 2. ⚡ Preferred Tech Stack & UI System Selector (Strict Library Gating)
+Eliminate agent hallucinated packages and mismatched styling conventions by locking exact library imports into `.cursorrules`, `CLAUDE.md`, and `AGENTS.md`:
+- **Next.js 15 (App Router) + shadcn/ui:** Strict `@/components/ui` component imports with zero black-box dependencies.
+- **Astro 5 + Content Collections:** Zero-JS client by default, MDX documentation, and perfect 100/100 Lighthouse performance.
+- **React Native (Expo SDK 52):** NativeWind v4 (Tailwind), local SQLite offline persistence, and universal deep links.
+- **Flutter 3.x + Material 3 (Dart):** Strict Riverpod state management and cross-platform native graphics compilation.
+- **FastAPI (Python 3.12) + React 19 SPA:** Automated OpenAPI contracts paired with an ultra-responsive React SPA.
+- **Stack-Agnostic / AI Standard:** Decoupled REST/GraphQL contracts allowing autonomous agents to select local toolchains.
+
+### 3. 💡 Interactive Plain-English Architecture Helpers & Real-World Analogies
+- Every Platform Target, Tech Stack preset, and multilingual toggle features a clickable **(?)** helper button.
+- Designed for non-technical executives, product managers, and senior engineers alike, providing real-world analogies (e.g. *comparing Astro to a stripped-down racing bike or Next.js to an architect-designed home*), "Best Used For" criteria, and "When to Avoid" warnings.
+- Includes a 1-click **"Select This Option"** action directly inside the modal.
+
+### 4. 🌍 Multilingual & Right-to-Left (RTL) Support (Arabic / Urdu / English)
+- Enforces CSS logical properties (`ms-`, `me-`, `ps-`, `pe-`, `start-`, `end-`) instead of legacy physical coordinates (`ml-`, `mr-`, `pl-`, `pr-`, `left-`, `right-`).
+- Mandates dynamic `dir="rtl"` layout switching, bidirectional typography mirroring, and Google Noto Naskh Arabic & Noto Nastaliq Urdu fallbacks in all AI agent prompt directives.
+
+### 5. 🔑 Automated Production `.env.example` & Hosting Cloud Blueprints
+- Automatically generated `.env.example` file included in Step 5 and the master `.zip` export bundle, dynamically tailored to your initiative's target platform and database providers.
+- Comprehensive cloud production hosting blueprints documented in Pillar 4 (`governance.md`) for Vercel, Cloudflare R2, Supabase PostgreSQL, and Expo EAS.
+
+### 6. 🛡️ 6-Region Regulatory & Compliance Matrix (16+ Frameworks)
 Tailor every synthesized specification to jurisdictional mandates across 7 distinct profiles:
 - **US / Canada (Federal & FinTech):** SOC 2 Type II, HIPAA, FedRAMP, CCPA, PCI-DSS v4.0, GLBA.
 - **EU / UK (GDPR & Digital Sovereignty):** GDPR (Articles 25/32), DORA, EU AI Act, NIS2, UK Data Protection Act.
@@ -36,29 +65,16 @@ Tailor every synthesized specification to jurisdictional mandates across 7 disti
 - **Pakistan (SBP & Digital Governance):** State Bank of Pakistan (SBP) Framework for Enterprise Technology Governance, PECA 2016.
 - **Global Enterprise Baseline:** ISO/IEC 27001:2022, SOC 2 Type II, and NIST Cybersecurity Framework 2.0.
 
-### 2. 🛡️ Advanced Cybersecurity Engine: STRIDE & Anti-Slopsquatting
-- **STRIDE Threat Modeling Matrix:** Every initiative includes a complete threat model table covering **S**poofing, **T**ampering, **R**epudiation, **I**nformation Disclosure, **D**enial of Service, and **E**levation of Privilege with designated mitigation strategies and verification commands.
-- **Anti-Slopsquatting Ecosystem Whitelist:** Strict runtime invariant prohibiting hallucinated or untrusted third-party dependencies, enforcing vetted, production-grade packages (e.g., `@prisma/client`, `zod`, `pino`, `jose`, `bcryptjs`, `helmet`) and mandating package lockfile pinning with integrity hashes.
+### 7. 🎯 Proven Architectural Combinations Matrix
 
-### 3. 📜 Client Security & Architecture Attestation (`SECURITY-ATTESTATION.md`)
-- Formal, audit-ready attestation report generated directly in the browser for client enterprise sign-off.
-- Details Executive Summary, Jurisdictional Compliance, Zero-Telemetry BYOK Privacy Attestation, STRIDE Threat Summary, Ecosystem Package Integrity, and Continuous CI Verification commitments.
-- Available via **1-click download** in Step 5 and included automatically in the `.zip` export bundle.
-
-### 4. 🗄️ Persistent Initiative Library (Native IndexedDB)
-- 100% in-browser, zero-backend persistent storage powered by native IndexedDB (`specglow_sdd_db`).
-- Seamlessly auto-saves all synthesized initiatives and imported manifests.
-- **Saved Initiatives Drawer:** Instantly browse previous work, review story points, model used, and jurisdiction, with **1-click Load** and **Delete** actions.
-
-### 5. 🔌 SpecGlow MCP Bridge (`specglow-mcp.json` & `mcp-server.js`)
-- Model Context Protocol stdio server allowing Claude Code CLI, Cursor, and Windsurf to query constitution invariants, functional specs, task graphs, and validate code patches directly against architectural rules.
-
-### 6. 🏗️ Guided Skyscraper Blueprint Journey (5-Stage Studio Experience)
-- **Stage 1 (Tell Your Vision):** Plain-English intake with 12+ battle-tested starter blueprints across 8 industries (*FinTech, Healthcare, AI Agents, E-Commerce, Security, Supply Chain, GovTech*).
-- **Stage 2 (Set The Boundaries):** 6 core regulatory archetypes + 16-framework compliance taxonomy + Conway's Law Team Delivery Topology selector (*Single Squad, Domain Pods, Hub-and-Spoke, Regulated ARB*).
-- **Stage 3 (The Architect's Interview):** The "Grill-Me" discovery loop solving architectural dilemmas with 1-click recommended enterprise defaults.
-- **Stage 4 (The 4-Pillar Master Blueprint):** Live AI or instant offline synthesis generating `constitution.md`, `spec.md`, `tasks.md`, `governance.md`, and C4 Mermaid diagrams.
-- **Stage 5 (Hand to the Builders):** 1-click prompts for Cursor, Claude 3.5 Sonnet, and AGENTS.md, Jira CSV export, and synthetic Monte Carlo simulation.
+| Business Goal / Domain | Platform Target | Recommended Tech Stack | Compliance Profile | Production Cloud Blueprint |
+| :--- | :--- | :--- | :--- | :--- |
+| **High-Traffic E-Commerce Store** | High-Volume Commerce | Next.js 15 + shadcn/ui | PCI-DSS v4.0 & CCPA | Vercel + Upstash Redis + Stripe |
+| **Consumer / Healthcare Mobile App** | Mobile iOS & Android | React Native (Expo 52) | HIPAA & HITECH | Expo EAS + SQLite + Supabase |
+| **Enterprise B2B SaaS Platform** | Enterprise B2B SaaS | Next.js 15 + shadcn/ui | SOC-2 Type II & GDPR | Vercel + Neon Postgres (RLS) + Stripe |
+| **EdTech LMS & Knowledge Hub** | Web Portals & Apps | Astro 5 or Next.js 15 | FERPA, COPPA, xAPI | Cloudflare Pages + Cloudflare R2 |
+| **AI / ML Data Platform** | Enterprise B2B SaaS | FastAPI + React 19 SPA | ISO 27001 & SOC-2 | Fly.io / AWS ECS + Neon Postgres |
+| **Global MENA / South Asia Bilingual** | Web Portals & Apps | Next.js 15 (RTL Enabled) | SAMA CSF & UAE PDPL | Vercel + Noto Fonts + Supabase |
 
 ---
 
@@ -182,6 +198,7 @@ sdd-bundle-[initiative-name].zip
 ├── architecture-c4.mermaid      # C4 System Context Diagram source
 ├── architecture-sequence.mermaid# End-to-End Sequence Diagram source
 ├── architecture-erd.mermaid     # Data Model & State Transition source
+├── .env.example                 # Cloud, Database & Auth Environment Template
 └── sdd-manifest.json            # Bi-directional rehydration manifest
 ```
 

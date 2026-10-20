@@ -25,7 +25,10 @@ import {
   Lock,
   FileCode,
   Languages,
-  Code
+  Code,
+  HelpCircle,
+  Info,
+  X
 } from 'lucide-react'
 import { useSettings } from '../context/SettingsContext'
 import { Header } from '../components/Header'
@@ -286,6 +289,210 @@ const REGULATORY_DOMAINS: DomainOption[] = [
   }
 ]
 
+interface ArchitectureHelpDetail {
+  id: string
+  title: string
+  icon: string
+  badge: string
+  analogy: string
+  plainEnglish: string
+  bestUsedFor: string[]
+  whenToAvoid: string[]
+  recommendedPairings: string
+}
+
+const ARCHITECTURE_HELP_DETAILS: Record<string, ArchitectureHelpDetail> = {
+  'web-portal': {
+    id: 'web-portal',
+    title: 'Web Portals & Modern Web Applications',
+    icon: '🌐',
+    badge: 'Next.js / SSR',
+    analogy: 'Like a modern flagship store on the main avenue—built for maximum foot traffic, discoverability, and rapid customer entry.',
+    plainEnglish: 'Web applications rendered dynamically on the server and cached globally. Every page loads in a fraction of a second and can be easily found and indexed by Google.',
+    bestUsedFor: [
+      'Public corporate portals, customer hubs, and landing pages',
+      'SEO-dependent web applications where Google ranking directly impacts revenue',
+      'High-traffic portals with real-time dynamic dashboard updates'
+    ],
+    whenToAvoid: [
+      'Apps that must run offline inside airplanes or basements without internet (choose Mobile App instead)',
+      'Apps requiring continuous access to phone hardware like Bluetooth or HealthKit'
+    ],
+    recommendedPairings: 'Next.js 15 or Astro + Supabase/Neon PostgreSQL + Vercel / Cloudflare'
+  },
+  'mobile-app': {
+    id: 'mobile-app',
+    title: 'Mobile iOS & Android Apps (React Native / Expo)',
+    icon: '📱',
+    badge: 'Expo / Native',
+    analogy: 'Like a personal pocket assistant that works on airplanes and in underground parking lots without an internet signal.',
+    plainEnglish: 'A single codebase written in TypeScript that compiles into native iOS (App Store) and Android (Google Play) applications with native phone performance.',
+    bestUsedFor: [
+      'Mobile-first apps for consumers, field agents, delivery drivers, and doctors',
+      'Offline-first usage with local SQLite database sync when network is spotty',
+      'Push notifications, camera scanning, biometric FaceID / fingerprint authentication'
+    ],
+    whenToAvoid: [
+      'Internal B2B enterprise dashboards with 50-column data tables (better on desktop web)',
+      'Public marketing content relying on search engine crawlers'
+    ],
+    recommendedPairings: 'React Native (Expo SDK 52) + SQLite + Supabase + Expo EAS Cloud Build'
+  },
+  'saas-web': {
+    id: 'saas-web',
+    title: 'Enterprise Multi-Tenant B2B SaaS',
+    icon: '🏢',
+    badge: 'Multi-Tenant',
+    analogy: 'Like a luxury commercial office building with private secure keycards for each tenant organization.',
+    plainEnglish: 'A subscription-based business software where many companies (tenants) use the same system, but their data is strictly isolated using database security rules.',
+    bestUsedFor: [
+      'Workplace dashboards, CRM, ERP, project management, and analytics',
+      'Complex multi-role permissions (Admin, Manager, Auditor, Member)',
+      'Subscription billing, invoices, and per-organization audit journals'
+    ],
+    whenToAvoid: [
+      'Simple brochure websites or one-time promotional event pages',
+      'Consumer gaming or phone-only camera apps'
+    ],
+    recommendedPairings: 'Next.js 15 + PostgreSQL Row-Level Security (RLS) + Stripe Billing'
+  },
+  'e-commerce': {
+    id: 'e-commerce',
+    title: 'High-Volume E-Commerce & Retail',
+    icon: '🛍️',
+    badge: 'Store & Cart',
+    analogy: 'Like a high-speed airport ticket counter during holiday peak—everyone gets checked out without lines crashing or seats being double-sold.',
+    plainEnglish: 'An online storefront designed to handle thousands of simultaneous shoppers, reserving cart inventory in milliseconds so items are never oversold.',
+    bestUsedFor: [
+      'Flash sales, limited-edition product drops, large catalog storefronts',
+      'High concurrent checkout spikes (Black Friday / Cyber Monday traffic)',
+      'Multi-currency payment gateways and idempotent Stripe webhook reconciliation'
+    ],
+    whenToAvoid: [
+      'Small team internal internal tools with only 10 users',
+      'Content-only blogs and technical documentation sites'
+    ],
+    recommendedPairings: 'Next.js 15 + Upstash Redis Distributed Locks + Stripe / Adyen'
+  },
+  'nextjs-shadcn': {
+    id: 'nextjs-shadcn',
+    title: 'Next.js 15 (App Router) + shadcn/ui',
+    icon: '⚡',
+    badge: 'Recommended',
+    analogy: 'Like building a house with precision architectural blueprints and pre-crafted luxury fittings—you own all the code with zero proprietary lock-in.',
+    plainEnglish: 'The world-standard React framework backed by Vercel. shadcn/ui gives you beautiful, accessible buttons, dialogs, and tables where code is copied directly into your project rather than hidden in a black-box library.',
+    bestUsedFor: [
+      'Production SaaS platforms, customer portals, modern web apps',
+      'Teams wanting full design control, dark/light themes, and strict type safety',
+      'Fast server-side rendering with instant edge caching'
+    ],
+    whenToAvoid: [
+      'Pure documentation portals where zero JavaScript is needed (Astro is lighter)',
+      'Mobile-only applications'
+    ],
+    recommendedPairings: 'Vercel / Cloudflare Pages + Supabase/Neon PostgreSQL + Upstash Redis'
+  },
+  'astro-content': {
+    id: 'astro-content',
+    title: 'Astro 5 + Content Collections',
+    icon: '🚀',
+    badge: 'Content & Docs',
+    analogy: 'Like a lightweight racing bicycle stripped of all unnecessary baggage—it flies down the road at maximum speed.',
+    plainEnglish: 'A web framework designed for pure speed. It renders HTML on the server and strips out all JavaScript by default, achieving perfect 100/100 Google Lighthouse scores.',
+    bestUsedFor: [
+      'Blogs, technical documentation, knowledge bases, EdTech course sites',
+      'Content-heavy websites where SEO speed is the #1 priority',
+      'Writing content in Markdown or MDX with occasional interactive elements'
+    ],
+    whenToAvoid: [
+      'Heavy interactive web apps with dozens of real-time state changes and modals (choose Next.js)',
+      'Mobile applications'
+    ],
+    recommendedPairings: 'Cloudflare Pages / GitHub Pages + Cloudflare R2'
+  },
+  'react-native': {
+    id: 'react-native',
+    title: 'React Native + Expo SDK 52',
+    icon: '📱',
+    badge: 'iOS & Android',
+    analogy: 'Like a universal adapter plug that powers your appliances seamlessly in both the US and Europe with a single cord.',
+    plainEnglish: 'Build for both Apple iPhone and Android phones at the same time using familiar React and TypeScript. Expo takes care of camera, push notifications, and app store deployment.',
+    bestUsedFor: [
+      'Cross-platform mobile apps for iOS and Android',
+      'Teams with web developers who want to build mobile apps without learning Swift/Kotlin',
+      'Apps needing offline storage and native phone gestures'
+    ],
+    whenToAvoid: [
+      'Desktop-only web apps or search-engine-indexed landing pages'
+    ],
+    recommendedPairings: 'Expo EAS Cloud Build + SQLite + Supabase'
+  },
+  'flutter-dart': {
+    id: 'flutter-dart',
+    title: 'Flutter 3.x + Material 3 (Dart)',
+    icon: '🎨',
+    badge: 'Dart Multi-Platform',
+    analogy: 'Like an artist who paints every single pixel on canvas directly rather than asking the phone operating system to draw buttons.',
+    plainEnglish: 'Google’s UI toolkit that draws every button and animation directly using a high-performance graphics engine. Looks identical across iOS, Android, and Desktop.',
+    bestUsedFor: [
+      'Visually custom apps with heavy fluid animations and custom graphics',
+      'Cross-platform mobile, desktop (Mac/Windows), and embedded devices'
+    ],
+    whenToAvoid: [
+      'Teams with zero Dart language experience (TypeScript/React Native is faster to hire for)'
+    ],
+    recommendedPairings: 'Firebase / Supabase + Appwrite'
+  },
+  'fastapi-react': {
+    id: 'fastapi-react',
+    title: 'FastAPI (Python 3.12) + React 19 SPA',
+    icon: '🐍',
+    badge: 'Python Backend',
+    analogy: 'Like pairing a German turbo diesel engine (Python backend) with an Italian sports car body (React frontend).',
+    plainEnglish: 'A high-speed Python backend that automatically produces machine-readable OpenAPI documentation, connected to an ultra-modern React user interface.',
+    bestUsedFor: [
+      'AI/ML platforms, scientific computing, data pipelines',
+      'Teams whose engineers prefer Python for business logic and data processing'
+    ],
+    whenToAvoid: [
+      'Teams that want a single unified TypeScript codebase across full stack'
+    ],
+    recommendedPairings: 'Fly.io / AWS ECS + Neon Postgres + React SPA'
+  },
+  'stack-agnostic': {
+    id: 'stack-agnostic',
+    title: 'Stack-Agnostic / AI Standard',
+    icon: '🧩',
+    badge: 'Decoupled',
+    analogy: 'Like writing pure architectural blueprints with precise measurements without dictating which hammer or crane the construction crew must use.',
+    plainEnglish: 'Generates language-independent specifications, REST contracts, and database models. Allows AI coding agents (Claude, Cursor, Antigravity) to pick the best tools based on your environment.',
+    bestUsedFor: [
+      'Polyglot engineering teams, legacy codebases with Go/Rust/Java',
+      'Early exploratory initiatives testing different tech architectures'
+    ],
+    whenToAvoid: [
+      'Strict enterprise teams where package-lock dependencies must be locked down'
+    ],
+    recommendedPairings: 'Docker + Any cloud provider'
+  },
+  'rtl-multilingual': {
+    id: 'rtl-multilingual',
+    title: 'Multilingual & Right-to-Left (RTL) Layouts',
+    icon: '🌍',
+    badge: 'i18n & Logical CSS',
+    analogy: 'Like having an English book and an Arabic/Urdu book where the binding, cover, pages, and margins automatically mirror seamlessly without re-printing.',
+    plainEnglish: 'Enforces CSS logical properties so buttons and cards flip gracefully when a user switches between English (Left-to-Right) and Arabic or Urdu (Right-to-Left). Agents are instructed never to use hardcoded physical left/right margins.',
+    bestUsedFor: [
+      'Global applications serving Middle East (GCC), North Africa, and South Asia',
+      'Bilingual English/Arabic or English/Urdu portals'
+    ],
+    whenToAvoid: [
+      'Single-language regional apps with no planned international expansion'
+    ],
+    recommendedPairings: 'Google Noto Naskh Arabic & Noto Nastaliq Urdu Fonts'
+  }
+}
+
 export const VisualWorkflowPage: React.FC = () => {
   const { settings } = useSettings()
 
@@ -295,6 +502,7 @@ export const VisualWorkflowPage: React.FC = () => {
   // Modals state
   const [isSettingsOpen, setIsSettingsOpen] = useState(false)
   const [isGuideOpen, setIsGuideOpen] = useState(false)
+  const [activeHelpTopic, setActiveHelpTopic] = useState<string | null>(null)
 
   // Input state
   const [input, setInput] = useState<RequirementInput>({
@@ -730,6 +938,31 @@ export const VisualWorkflowPage: React.FC = () => {
               </div>
             </div>
 
+            {/* Quick Architectural Combinations Helper Banner */}
+            <div className="p-3.5 rounded-xl bg-gradient-to-r from-cyan-500/10 via-indigo-500/10 to-purple-500/10 border border-cyan-500/20 dark:border-cyan-500/30 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-xs">
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-lg bg-cyan-500/20 dark:bg-cyan-500/30 flex items-center justify-center text-cyan-600 dark:text-cyan-300 shrink-0">
+                  <Sparkles className="w-4 h-4" />
+                </div>
+                <div>
+                  <h4 className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white">
+                    Need help deciding? Click any <span className="inline-flex items-center justify-center w-4 h-4 rounded-full bg-slate-200 dark:bg-zinc-800 text-[10px] text-slate-700 dark:text-zinc-300 font-bold mx-0.5">?</span> icon for real-world analogies
+                  </h4>
+                  <p className="text-[11px] text-slate-500 dark:text-zinc-400">
+                    Learn which platform target, tech stack, and compliance combination is proven for your use case.
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsGuideOpen(true)}
+                className="px-3 py-1.5 rounded-lg bg-cyan-600 hover:bg-cyan-500 text-white text-xs font-bold shrink-0 self-start sm:self-auto transition-all shadow-xs flex items-center gap-1.5 cursor-pointer"
+              >
+                <span>View Combinations Matrix</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </button>
+            </div>
+
             {/* Regulatory Domain Selection */}
             <div className="space-y-3">
               <label className="text-sm sm:text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
@@ -846,7 +1079,7 @@ export const VisualWorkflowPage: React.FC = () => {
                       key={plat.id}
                       type="button"
                       onClick={() => setInput(prev => ({ ...prev, platformTarget: plat.id }))}
-                      className={`p-4 rounded-xl border text-left transition-all cursor-pointer shadow-[0_1px_6px_rgba(0,0,0,0.02)] dark:shadow-none ${
+                      className={`p-4 rounded-xl border text-left transition-all cursor-pointer shadow-[0_1px_6px_rgba(0,0,0,0.02)] dark:shadow-none group ${
                         isSelected
                           ? 'bg-cyan-50/80 dark:bg-cyan-950/60 border-cyan-500/80 dark:border-cyan-400 ring-2 ring-cyan-500/20 shadow-sm'
                           : 'bg-white/90 dark:bg-zinc-950 border-slate-200/70 dark:border-zinc-800/80 hover:border-slate-300 dark:hover:border-zinc-700'
@@ -859,9 +1092,30 @@ export const VisualWorkflowPage: React.FC = () => {
                             {plat.title}
                           </h5>
                         </div>
-                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 dark:bg-zinc-800 text-slate-600 dark:text-zinc-300 shrink-0">
-                          {plat.badge}
-                        </span>
+                        <div className="flex items-center gap-1.5 shrink-0">
+                          <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 dark:bg-zinc-800 text-slate-600 dark:text-zinc-300">
+                            {plat.badge}
+                          </span>
+                          <span
+                            role="button"
+                            tabIndex={0}
+                            title={`What is ${plat.title} good for? Click for plain-English analogy`}
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              setActiveHelpTopic(plat.id)
+                            }}
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter' || e.key === ' ') {
+                                e.stopPropagation()
+                                setActiveHelpTopic(plat.id)
+                              }
+                            }}
+                            className="p-1 rounded-md text-slate-400 hover:text-cyan-600 dark:hover:text-cyan-400 hover:bg-slate-100 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
+                            aria-label={`Learn more about ${plat.title}`}
+                          >
+                            <HelpCircle className="w-3.5 h-3.5" />
+                          </span>
+                        </div>
                       </div>
                       <p className="text-xs text-slate-500 dark:text-zinc-400 mt-2 font-medium">
                         {plat.desc}
@@ -930,7 +1184,7 @@ export const VisualWorkflowPage: React.FC = () => {
                       key={stk.id}
                       type="button"
                       onClick={() => setInput(prev => ({ ...prev, techStack: stk.id }))}
-                      className={`p-4 rounded-xl border text-left transition-all cursor-pointer shadow-[0_1px_6px_rgba(0,0,0,0.02)] dark:shadow-none ${
+                      className={`p-4 rounded-xl border text-left transition-all cursor-pointer shadow-[0_1px_6px_rgba(0,0,0,0.02)] dark:shadow-none group ${
                         isSelected
                           ? 'bg-indigo-50/80 dark:bg-indigo-950/60 border-indigo-500/80 dark:border-indigo-400 ring-2 ring-indigo-500/20 shadow-sm'
                           : 'bg-white/90 dark:bg-zinc-950 border-slate-200/70 dark:border-zinc-800/80 hover:border-slate-300 dark:hover:border-zinc-700'
@@ -940,9 +1194,30 @@ export const VisualWorkflowPage: React.FC = () => {
                         <h5 className="text-sm font-bold text-slate-900 dark:text-white">
                           {stk.title}
                         </h5>
-                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 dark:bg-zinc-800 text-slate-600 dark:text-zinc-300 shrink-0">
-                          {stk.badge}
-                        </span>
+                        <div className="flex items-center gap-1.5 shrink-0">
+                          <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 dark:bg-zinc-800 text-slate-600 dark:text-zinc-300">
+                            {stk.badge}
+                          </span>
+                          <span
+                            role="button"
+                            tabIndex={0}
+                            title={`What is ${stk.title} good for? Click for plain-English analogy`}
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              setActiveHelpTopic(stk.id)
+                            }}
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter' || e.key === ' ') {
+                                e.stopPropagation()
+                                setActiveHelpTopic(stk.id)
+                              }
+                            }}
+                            className="p-1 rounded-md text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-slate-100 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
+                            aria-label={`Learn more about ${stk.title}`}
+                          >
+                            <HelpCircle className="w-3.5 h-3.5" />
+                          </span>
+                        </div>
                       </div>
                       <p className="text-xs text-slate-500 dark:text-zinc-400 mt-2 font-medium">
                         {stk.desc}
@@ -968,6 +1243,18 @@ export const VisualWorkflowPage: React.FC = () => {
                       <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-purple-100 dark:bg-purple-950 text-purple-800 dark:text-purple-300">
                         i18n & Logical CSS
                       </span>
+                      <button
+                        type="button"
+                        title="What is Multilingual & RTL good for? Click for plain-English explanation"
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          setActiveHelpTopic('rtl-multilingual')
+                        }}
+                        className="p-1 rounded-md text-slate-400 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-slate-100 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
+                        aria-label="Learn more about Multilingual and RTL"
+                      >
+                        <HelpCircle className="w-3.5 h-3.5" />
+                      </button>
                     </div>
                     <p className="text-xs text-slate-500 dark:text-zinc-400 mt-0.5">
                       Enforces CSS logical properties (<code className="text-purple-600 dark:text-purple-400">ms-</code>, <code className="text-purple-600 dark:text-purple-400">me-</code>, <code className="text-purple-600 dark:text-purple-400">ps-</code>, <code className="text-purple-600 dark:text-purple-400">pe-</code>, <code className="text-purple-600 dark:text-purple-400">start-</code>, <code className="text-purple-600 dark:text-purple-400">end-</code>), dynamic <code className="text-purple-600 dark:text-purple-400">dir="rtl"</code> switching, and Google Noto Naskh/Nastaliq font fallbacks in agent instructions.
@@ -1820,6 +2107,163 @@ export const VisualWorkflowPage: React.FC = () => {
         isOpen={isGuideOpen}
         onClose={() => setIsGuideOpen(false)}
       />
+
+      {/* Plain-English Architecture Topic Help Modal */}
+      {activeHelpTopic && ARCHITECTURE_HELP_DETAILS[activeHelpTopic] && (() => {
+        const item = ARCHITECTURE_HELP_DETAILS[activeHelpTopic]
+        const isPlatform = ['web-portal', 'mobile-app', 'saas-web', 'e-commerce'].includes(item.id)
+        const isStack = ['nextjs-shadcn', 'astro-content', 'react-native', 'flutter-dart', 'fastapi-react', 'stack-agnostic'].includes(item.id)
+        const isRtl = item.id === 'rtl-multilingual'
+
+        const isCurrentlyActive = isPlatform
+          ? (input.platformTarget || 'web-portal') === item.id
+          : isStack
+          ? (input.techStack || 'nextjs-shadcn') === item.id
+          : isRtl
+          ? input.enableRtlMultilingual
+          : false
+
+        return (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-sm animate-fade-in">
+            <div className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl space-y-5 p-6 sm:p-7">
+              {/* Header */}
+              <div className="flex items-start justify-between gap-4 pb-4 border-b border-slate-200 dark:border-zinc-800">
+                <div className="flex items-center gap-3">
+                  <span className="text-3xl">{item.icon}</span>
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <h3 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white">
+                        {item.title}
+                      </h3>
+                      <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-cyan-100 dark:bg-cyan-950 text-cyan-800 dark:text-cyan-300">
+                        {item.badge}
+                      </span>
+                    </div>
+                    <p className="text-xs text-slate-500 dark:text-zinc-400 mt-0.5 flex items-center gap-1.5">
+                      <Info className="w-3.5 h-3.5 text-cyan-500" />
+                      <span>Plain-English Architecture & Technology Guide</span>
+                    </p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setActiveHelpTopic(null)}
+                  className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-zinc-200 hover:bg-slate-100 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
+                  aria-label="Close"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              {/* Real World Analogy Box */}
+              <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/20 dark:border-amber-500/30 flex items-start gap-3">
+                <span className="text-xl">💡</span>
+                <div>
+                  <h4 className="text-xs font-bold uppercase tracking-wider text-amber-900 dark:text-amber-300 mb-0.5">
+                    Real-World Analogy
+                  </h4>
+                  <p className="text-xs sm:text-sm text-slate-700 dark:text-zinc-200 font-medium leading-relaxed">
+                    {item.analogy}
+                  </p>
+                </div>
+              </div>
+
+              {/* Plain English Explanation */}
+              <div className="space-y-1.5">
+                <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-zinc-500">
+                  What is this?
+                </h4>
+                <p className="text-xs sm:text-sm text-slate-700 dark:text-zinc-200 leading-relaxed font-normal">
+                  {item.plainEnglish}
+                </p>
+              </div>
+
+              {/* Best Used For & When to Avoid Grid */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1">
+                <div className="p-4 rounded-xl bg-emerald-500/5 border border-emerald-500/20 dark:border-emerald-500/30 space-y-2">
+                  <div className="flex items-center gap-1.5 text-xs font-bold text-emerald-700 dark:text-emerald-400 uppercase tracking-wider">
+                    <CheckCircle2 className="w-3.5 h-3.5" />
+                    <span>Best Used For</span>
+                  </div>
+                  <ul className="space-y-1.5">
+                    {item.bestUsedFor.map((pt, idx) => (
+                      <li key={idx} className="text-xs text-slate-600 dark:text-zinc-300 flex items-start gap-1.5">
+                        <span className="text-emerald-500 font-bold shrink-0">•</span>
+                        <span>{pt}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                <div className="p-4 rounded-xl bg-rose-500/5 border border-rose-500/20 dark:border-rose-500/30 space-y-2">
+                  <div className="flex items-center gap-1.5 text-xs font-bold text-rose-700 dark:text-rose-400 uppercase tracking-wider">
+                    <AlertCircle className="w-3.5 h-3.5" />
+                    <span>When to Avoid</span>
+                  </div>
+                  <ul className="space-y-1.5">
+                    {item.whenToAvoid.map((pt, idx) => (
+                      <li key={idx} className="text-xs text-slate-600 dark:text-zinc-300 flex items-start gap-1.5">
+                        <span className="text-rose-500 font-bold shrink-0">•</span>
+                        <span>{pt}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+
+              {/* Recommended Cloud & Storage Pairings */}
+              <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-zinc-800/50 border border-slate-200 dark:border-zinc-800 space-y-1">
+                <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-zinc-400">
+                  Recommended Production Blueprint
+                </span>
+                <p className="text-xs text-slate-800 dark:text-zinc-200 font-mono font-medium">
+                  {item.recommendedPairings}
+                </p>
+              </div>
+
+              {/* Footer actions */}
+              <div className="flex flex-col-reverse sm:flex-row items-center justify-between gap-3 pt-4 border-t border-slate-200 dark:border-zinc-800">
+                <button
+                  type="button"
+                  onClick={() => setActiveHelpTopic(null)}
+                  className="w-full sm:w-auto px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold border border-slate-200 dark:border-zinc-700 hover:bg-slate-100 dark:hover:bg-zinc-800 text-slate-700 dark:text-zinc-300 transition-colors cursor-pointer"
+                >
+                  Close
+                </button>
+
+                <div className="flex items-center gap-2 w-full sm:w-auto">
+                  {isCurrentlyActive ? (
+                    <div className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-xs sm:text-sm font-bold border border-emerald-500/20">
+                      <Check className="w-4 h-4" />
+                      <span>Currently Selected in Your Architecture</span>
+                    </div>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (isPlatform) {
+                          setInput(prev => ({ ...prev, platformTarget: item.id as PlatformTarget }))
+                        } else if (isStack) {
+                          setInput(prev => ({ ...prev, techStack: item.id as TechStackPreset }))
+                        } else if (isRtl) {
+                          setInput(prev => ({ ...prev, enableRtlMultilingual: true }))
+                        }
+                        setActiveHelpTopic(null)
+                      }}
+                      className="w-full sm:w-auto px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-cyan-600 hover:bg-cyan-500 text-white shadow-md transition-all cursor-pointer flex items-center justify-center gap-2"
+                    >
+                      <Check className="w-4 h-4" />
+                      <span>
+                        {isRtl ? 'Enable Multilingual & RTL' : `Select ${item.title}`}
+                      </span>
+                    </button>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        )
+      })()}
     </div>
   )
 }

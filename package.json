@@ -4,7 +4,7 @@
   "author": "Syed Imon Rizvi (Mercer and Mills) <contact@mercerandmills.com>",
   "license": "Apache-2.0",
   "private": true,
-  "version": "3.0.0",
+  "version": "3.1.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
