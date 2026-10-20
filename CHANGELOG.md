@@ -6,6 +6,44 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [3.2.0] - 2026-10-20 (Pre-Launch Hardening & Brand Identity)
+
+### 🌟 Added
+- **Official 3D Isometric "S" Monogram Brand Identity:**
+  - Evaluated 4 logo contenders and officially adopted the 3D Isometric Cyber "S" Monogram (`public/logo.png`, `public/favicon.png`, `src/assets/logo.png`).
+  - Added an ambient cyan/indigo radial glow ring around the logo in `Header.tsx` with high-contrast Day/Night mode styling.
+  - Configured `index.html` with high-res PNG favicons, `apple-touch-icon`, and OpenGraph preview tags.
+- **Persistent "Skyscraper Blueprint Journey" HUD:**
+  - Pinned a sticky floating HUD (`sticky top-[70px] sm:top-[76px] z-30`) in `VisualWorkflowPage.tsx` that appears automatically when scrolling into any stage.
+  - Keeps all 5 stages (`01. Vision`, `02. Boundaries`, `03. Interview`, `04. Blueprints`, `05. Builders`) continuously in front of the user with live status indicators (active cyan pulse, completion checkmark `✓`, lock status `🔒`, and progress % bar).
+  - 1-click stage jumping with smooth viewport centering via `#stage-workspace`.
+  - Added a **Compact / Expand** toggle for customizable screen real estate.
+- **Bulletproof Mermaid Diagram Engine & Zoom Controls:**
+  - Added `sanitizeMermaidCode` in `MermaidViewer.tsx` to automatically strip code fences, fix missing root keywords (`flowchart TD`, `sequenceDiagram`, `erDiagram`), and programmatically quote node labels with special characters (e.g. `Client["User (Mobile)"]`).
+  - Added an auto-recovery fallback renderer (`getVerifiedFallbackDiagram`) with automatic DOM error cleanup (`#d...`) so a broken diagram box is never displayed.
+  - Implemented interactive vector zoom controls (`- / 100% / +` and `Reset`) with responsive canvas scaling.
+  - Displayed a green `✓ Vector Syntax Stabilized` verification badge.
+- **SDD Mental Model & 3-Step Agent Handoff Guide:**
+  - Added the *"Why Spec-Driven Blueprints Before Writing Code?"* educational card in Stage 1 explaining why locking specifications upfront eliminates AI context drift and hallucinated APIs.
+  - Added a 3-step developer blueprint execution guide in Stage 5 with copyable terminal commands for **Cursor** (`@master-spec.json`), **Claude Desktop** (via MCP stdio server), and **Windsurf**.
+- **Voice AI Co-Pilot & Dynamic Architecture Advisor:**
+  - Restored audio Voice Co-Pilot recording with real-time intent parsing.
+  - Added AI Idea Architecture Advisor to recommend platform targets, tech stacks, and regulatory domains from natural language prompts.
+  - Standardized 4-option architectural dilemma structure with instant "Accept All Recommended" reactive feedback.
+
+### 🛡️ Hardened & Fixed
+- **Single-Shot JSON Resilient Repair & Max Output Ceiling:**
+  - Enhanced `cleanAndParseJSON` in `aiService.ts` with illegal control character stripping, trailing comma elimination, and mid-stream truncation repair (auto-closing open quotes, brackets, and braces).
+  - Raised token generation ceiling to 8,192 tokens across Gemini, Anthropic, and OpenAI.
+  - Wrapped live synthesis with an auto-fallback to high-fidelity reference specification packages on any network or rate-limit error.
+- **Demo Mode vs. Live AI Transparency:**
+  - Converted the header model indicator into an interactive status button distinguishing `🟡 Interactive Demo Mode • Connect Key` (with 1-click settings trigger) and `🟢 Live AI: Provider (Model)`.
+  - Clarified simulated reference blueprints vs. live BYOK generation in Stage 1 and Stage 4.
+- **Responsive Viewport Density for 13" Laptops & Mobile:**
+  - Refactored Quick Metrics pills, diagram switcher tabs, and export action grids in `SpecificationViewer.tsx` to fluid `grid-cols-3 sm:flex` containers with horizontal scroll guards.
+
+---
+
 ## [3.0.0] - 2026-10-20 (Enterprise Release)
 
 ### 🌟 Added
