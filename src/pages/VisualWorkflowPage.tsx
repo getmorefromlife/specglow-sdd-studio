@@ -809,37 +809,39 @@ export const VisualWorkflowPage: React.FC = () => {
           </div>
         )}
 
-        {/* PERSISTENT SKYSCRAPER BLUEPRINT JOURNEY HUD (Sticky In-Your-Face Navigation) */}
-        <div
-          className={`sticky top-[70px] sm:top-[76px] z-30 transition-all duration-300 ${
-            isScrolledPastHero
-              ? 'opacity-100 translate-y-0 pointer-events-auto mb-4'
-              : 'opacity-0 -translate-y-3 pointer-events-none h-0 overflow-hidden m-0 p-0 border-0'
-          }`}
-        >
-          <div className="bg-white/95 dark:bg-zinc-950/95 backdrop-blur-xl rounded-2xl border border-cyan-500/40 dark:border-cyan-500/30 shadow-xl shadow-cyan-500/5 overflow-hidden transition-all">
-            {/* HUD Header Bar */}
-            <div className="px-3.5 py-2 sm:px-4 sm:py-2.5 bg-slate-50/80 dark:bg-zinc-900/80 border-b border-slate-200/60 dark:border-zinc-800/80 flex items-center justify-between gap-3">
+        {/* UNIFIED PERSISTENT SKYSCRAPER BLUEPRINT JOURNEY (Single Sticky Component) */}
+        <section className="sticky top-[68px] sm:top-[74px] z-30 transition-all duration-200">
+          <div
+            className={`bg-white/95 dark:bg-zinc-900/95 backdrop-blur-xl rounded-2xl p-3 sm:p-4 border shadow-lg transition-all ${
+              isScrolledPastHero
+                ? 'border-cyan-500/40 dark:border-cyan-500/40 shadow-cyan-500/10'
+                : 'border-slate-200/80 dark:border-zinc-800/80 shadow-slate-200/50 dark:shadow-none'
+            }`}
+          >
+            {/* Header row with title, active badge, and progress */}
+            <div className="flex items-center justify-between mb-2.5 sm:mb-3">
               <div className="flex items-center gap-2 min-w-0">
                 <span className="text-base sm:text-lg">🏢</span>
-                <span className="text-xs sm:text-sm font-bold tracking-tight text-slate-900 dark:text-white truncate">
-                  The Skyscraper Blueprint Journey
-                </span>
-                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-cyan-100 text-cyan-800 dark:bg-cyan-950/90 dark:text-cyan-300 border border-cyan-300 dark:border-cyan-800 shrink-0">
-                  <span className="w-1.5 h-1.5 rounded-full bg-cyan-500 animate-pulse" />
-                  Stage {activeStage} of 5 Active
-                </span>
+                <div className="flex items-center gap-2 truncate">
+                  <h2 className="text-sm sm:text-base font-bold tracking-tight text-slate-900 dark:text-white truncate">
+                    The Skyscraper Blueprint Journey
+                  </h2>
+                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-cyan-100 text-cyan-800 dark:bg-cyan-950/90 dark:text-cyan-300 border border-cyan-300 dark:border-cyan-800 shrink-0">
+                    <span className="w-1.5 h-1.5 rounded-full bg-cyan-500 animate-pulse" />
+                    Stage {activeStage} of 5 Active
+                  </span>
+                </div>
               </div>
 
-              <div className="flex items-center gap-2 shrink-0">
-                <span className="hidden sm:inline-block text-[11px] font-semibold text-slate-500 dark:text-zinc-400">
+              <div className="flex items-center gap-2.5 shrink-0">
+                <span className="hidden sm:inline-block text-xs font-semibold text-slate-500 dark:text-zinc-400">
                   {activeStage * 20}% Assembled
                 </span>
                 <button
                   type="button"
                   onClick={() => setIsHudMinimized(!isHudMinimized)}
-                  className="px-2 py-1 rounded-md text-[11px] font-semibold text-slate-600 dark:text-zinc-300 hover:bg-slate-200/70 dark:hover:bg-zinc-800 transition-colors flex items-center gap-1 cursor-pointer"
-                  title={isHudMinimized ? "Expand Journey Bar" : "Minimize Journey Bar"}
+                  className="px-2.5 py-1 rounded-lg text-xs font-semibold text-slate-600 dark:text-zinc-300 bg-slate-100 dark:bg-zinc-800/80 hover:bg-slate-200/70 dark:hover:bg-zinc-700 transition-colors flex items-center gap-1 cursor-pointer border border-slate-200/60 dark:border-zinc-700/60"
+                  title={isHudMinimized ? "Expand Journey Bar" : "Compact Journey Bar"}
                 >
                   {isHudMinimized ? (
                     <>
@@ -856,55 +858,53 @@ export const VisualWorkflowPage: React.FC = () => {
               </div>
             </div>
 
-            {/* Expanded 5-Step Track */}
+            {/* 5-Step Buttons Bar */}
             {!isHudMinimized && (
-              <div className="p-2 sm:p-2.5">
-                <div className="grid grid-cols-2 sm:grid-cols-5 gap-1.5 sm:gap-2">
-                  {[
-                    { id: 1, label: '01. Vision', shortLabel: 'Vision', sub: 'The Raw Idea', icon: Lightbulb, isReady: !!input.requirement, isLocked: false },
-                    { id: 2, label: '02. Boundaries', shortLabel: 'Boundaries', sub: 'Laws & Rigor', icon: Globe, isReady: !!input.domain, isLocked: false },
-                    { id: 3, label: '03. Interview', shortLabel: 'Interview', sub: 'Architect Dilemmas', icon: MessageSquareCode, isReady: Object.keys(selectedDecisions).length > 0, isLocked: false },
-                    { id: 4, label: '04. Blueprints', shortLabel: 'Blueprints', sub: packageData ? 'Suite Ready' : 'Synthesize Suite', icon: Layers, isReady: !!packageData, isLocked: !packageData },
-                    { id: 5, label: '05. Builders', shortLabel: 'Builders', sub: packageData ? 'Ready for Handoff' : 'Locked (Needs S4)', icon: Rocket, isReady: !!packageData, isLocked: !packageData }
-                  ].map(step => {
-                    const Icon = step.icon
-                    const isActive = activeStage === step.id
-                    const isDone = step.isReady && activeStage > step.id
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-1.5 sm:gap-2">
+                {[
+                  { id: 1, label: '01. Vision', sub: 'The Raw Idea', icon: Lightbulb, isReady: !!input.requirement, isLocked: false },
+                  { id: 2, label: '02. Boundaries', sub: 'Laws & Rigor', icon: Globe, isReady: !!input.domain, isLocked: false },
+                  { id: 3, label: '03. Interview', sub: 'Architect Dilemmas', icon: MessageSquareCode, isReady: Object.keys(selectedDecisions).length > 0, isLocked: false },
+                  { id: 4, label: '04. Blueprints', sub: packageData ? 'Suite Ready' : 'Synthesize Suite', icon: Layers, isReady: !!packageData, isLocked: !packageData },
+                  { id: 5, label: '05. Builders', sub: packageData ? 'Ready for Handoff' : 'Locked (Needs S4)', icon: Rocket, isReady: !!packageData, isLocked: !packageData }
+                ].map(step => {
+                  const Icon = step.icon
+                  const isActive = activeStage === step.id
+                  const isDone = step.isReady && activeStage > step.id
 
-                    return (
-                      <button
-                        key={step.id}
-                        type="button"
-                        onClick={() => handleStageSelect(step.id)}
-                        className={`flex items-center gap-2 p-2 rounded-xl text-left transition-all cursor-pointer border ${
+                  return (
+                    <button
+                      key={step.id}
+                      onClick={() => handleStageSelect(step.id)}
+                      className={`relative flex items-center gap-2.5 p-2 sm:p-2.5 rounded-xl border text-left transition-all cursor-pointer ${
+                        isActive
+                          ? 'bg-cyan-50/90 dark:bg-cyan-950/60 border-cyan-500 dark:border-cyan-400 ring-2 ring-cyan-500/20 shadow-xs'
+                          : isDone
+                          ? 'bg-slate-50/90 dark:bg-zinc-800/60 border-slate-200/80 dark:border-zinc-700 hover:border-cyan-400'
+                          : 'bg-white/90 dark:bg-zinc-900 border-slate-200/70 dark:border-zinc-800/80 hover:border-slate-300 dark:hover:border-zinc-700'
+                      }`}
+                    >
+                      <div
+                        className={`w-7 h-7 sm:w-8 sm:h-8 rounded-lg flex items-center justify-center shrink-0 font-bold text-xs transition-colors ${
                           isActive
-                            ? 'bg-cyan-500/15 dark:bg-cyan-950/70 border-cyan-500 dark:border-cyan-400 ring-1 ring-cyan-500/30 shadow-xs'
+                            ? 'bg-cyan-600 text-white shadow-xs'
                             : isDone
-                            ? 'bg-slate-100/70 dark:bg-zinc-900 border-slate-200 dark:border-zinc-800 hover:border-cyan-400/60'
-                            : 'bg-white dark:bg-zinc-900/60 border-slate-200/60 dark:border-zinc-800 hover:border-slate-300 dark:hover:border-zinc-700'
+                            ? 'bg-emerald-500 text-white'
+                            : step.isLocked
+                            ? 'bg-slate-100 dark:bg-zinc-800 text-slate-400 dark:text-zinc-500'
+                            : 'bg-slate-100 dark:bg-zinc-800 text-slate-700 dark:text-zinc-300'
                         }`}
                       >
-                        <div
-                          className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 font-bold text-xs ${
-                            isActive
-                              ? 'bg-cyan-600 text-white shadow-xs'
-                              : isDone
-                              ? 'bg-emerald-500 text-white'
-                              : step.isLocked
-                              ? 'bg-slate-200 dark:bg-zinc-800 text-slate-400 dark:text-zinc-500'
-                              : 'bg-slate-200 dark:bg-zinc-800 text-slate-700 dark:text-zinc-300'
-                          }`}
-                        >
-                          {isDone ? (
-                            <CheckCircle2 className="w-3.5 h-3.5" />
-                          ) : step.isLocked ? (
-                            <Lock className="w-3 h-3 text-slate-400 dark:text-zinc-500" />
-                          ) : (
-                            <Icon className="w-3.5 h-3.5" />
-                          )}
-                        </div>
-
-                        <div className="min-w-0">
+                        {isDone ? (
+                          <CheckCircle2 className="w-4 h-4" />
+                        ) : step.isLocked ? (
+                          <Lock className="w-3.5 h-3.5 text-slate-400 dark:text-zinc-500" />
+                        ) : (
+                          <Icon className="w-3.5 h-3.5" />
+                        )}
+                      </div>
+                      <div className="min-w-0">
+                        <div className="flex items-center gap-1">
                           <p
                             className={`text-xs font-bold truncate ${
                               isActive
@@ -914,112 +914,29 @@ export const VisualWorkflowPage: React.FC = () => {
                           >
                             {step.label}
                           </p>
-                          <p className="text-[10px] text-slate-500 dark:text-zinc-400 truncate">
-                            {step.sub}
-                          </p>
+                          {step.isLocked && (
+                            <span className="text-[8px] font-bold px-1 py-0.2 rounded bg-slate-100 dark:bg-zinc-800 text-slate-500 dark:text-zinc-400">
+                              Lock
+                            </span>
+                          )}
                         </div>
-                      </button>
-                    )
-                  })}
-                </div>
+                        <p className="text-[10px] sm:text-[11px] text-slate-500 dark:text-zinc-400 truncate font-medium">
+                          {step.sub}
+                        </p>
+                      </div>
+                    </button>
+                  )
+                })}
               </div>
             )}
 
             {/* Dynamic Progress Strip */}
-            <div className="w-full bg-slate-200 dark:bg-zinc-800 h-1">
+            <div className="w-full bg-slate-200 dark:bg-zinc-800 h-1 rounded-full overflow-hidden mt-2">
               <div
                 className="bg-gradient-to-r from-cyan-500 via-teal-400 to-indigo-500 h-full transition-all duration-300"
                 style={{ width: `${activeStage * 20}%` }}
               />
             </div>
-          </div>
-        </div>
-
-        {/* 5-STAGE INTERACTIVE PROGRESS PIPELINE (Large, Clear, High-Contrast) */}
-        <section className="bg-white dark:bg-zinc-900/80 rounded-2xl p-4 sm:p-6 border border-slate-200/70 dark:border-zinc-800/80 shadow-[0_2px_12px_rgba(0,0,0,0.03)] dark:shadow-none transition-colors">
-          <div className="flex items-center justify-between mb-4">
-            <div>
-              <h2 className="text-lg sm:text-xl font-bold tracking-tight text-slate-900 dark:text-white">
-                The Skyscraper Blueprint Journey
-              </h2>
-              <p className="text-xs sm:text-sm text-slate-500 dark:text-zinc-400">
-                Move step-by-step through the 5 stages of Spec-Driven Engineering. No guesswork.
-              </p>
-            </div>
-            <div className="hidden md:flex items-center gap-2 text-xs font-semibold px-3 py-1.5 rounded-full bg-cyan-50 dark:bg-cyan-950/60 text-cyan-700 dark:text-cyan-300 border border-cyan-200/80 dark:border-cyan-800 shadow-xs">
-              <Sparkles className="w-3.5 h-3.5" />
-              <span>Step {activeStage} of 5 Active</span>
-            </div>
-          </div>
-
-          {/* Stepper Buttons Bar */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 sm:gap-3">
-            {[
-              { id: 1, label: '01. Vision', sub: 'The Raw Idea', icon: Lightbulb, isReady: !!input.requirement, isLocked: false },
-              { id: 2, label: '02. Boundaries', sub: 'Laws & Rigor', icon: Globe, isReady: !!input.domain, isLocked: false },
-              { id: 3, label: '03. Interview', sub: 'Architect Dilemmas', icon: MessageSquareCode, isReady: Object.keys(selectedDecisions).length > 0, isLocked: false },
-              { id: 4, label: '04. Blueprints', sub: packageData ? 'Suite Ready' : 'Synthesize Suite', icon: Layers, isReady: !!packageData, isLocked: !packageData },
-              { id: 5, label: '05. Builders', sub: packageData ? 'Ready for Handoff' : 'Locked (Needs S4)', icon: Rocket, isReady: !!packageData, isLocked: !packageData }
-            ].map(step => {
-              const Icon = step.icon
-              const isActive = activeStage === step.id
-              const isDone = step.isReady && activeStage > step.id
-
-              return (
-                <button
-                  key={step.id}
-                  onClick={() => handleStageSelect(step.id)}
-                  className={`relative flex items-center gap-3 p-3.5 rounded-xl border text-left transition-all cursor-pointer ${
-                    isActive
-                      ? 'bg-cyan-50/80 dark:bg-cyan-950/50 border-cyan-500 dark:border-cyan-400 ring-2 ring-cyan-500/20 shadow-md'
-                      : isDone
-                      ? 'bg-slate-50/90 dark:bg-zinc-800/60 border-slate-200/80 dark:border-zinc-700 hover:border-cyan-400 shadow-xs'
-                      : 'bg-white/90 dark:bg-zinc-900 border-slate-200/70 dark:border-zinc-800/80 hover:border-slate-300 dark:hover:border-zinc-700 shadow-xs'
-                  }`}
-                >
-                  <div
-                    className={`w-9 h-9 rounded-lg flex items-center justify-center shrink-0 font-bold text-sm transition-colors ${
-                      isActive
-                        ? 'bg-cyan-600 text-white shadow-sm'
-                        : isDone
-                        ? 'bg-emerald-500 text-white shadow-xs'
-                        : step.isLocked
-                        ? 'bg-slate-100 dark:bg-zinc-800 text-slate-400 dark:text-zinc-500'
-                        : 'bg-slate-100 dark:bg-zinc-800 text-slate-700 dark:text-zinc-300'
-                    }`}
-                  >
-                    {isDone ? (
-                      <CheckCircle2 className="w-5 h-5" />
-                    ) : step.isLocked ? (
-                      <Lock className="w-4 h-4 text-slate-400 dark:text-zinc-500" />
-                    ) : (
-                      <Icon className="w-4 h-4" />
-                    )}
-                  </div>
-                  <div className="min-w-0">
-                    <div className="flex items-center gap-1.5">
-                      <p
-                        className={`text-xs sm:text-sm font-bold truncate ${
-                          isActive
-                            ? 'text-cyan-900 dark:text-cyan-200'
-                            : 'text-slate-800 dark:text-zinc-200'
-                        }`}
-                      >
-                        {step.label}
-                      </p>
-                      {step.isLocked && (
-                        <span className="text-[9px] font-bold px-1.5 py-0.2 rounded bg-slate-100 dark:bg-zinc-800 text-slate-500 dark:text-zinc-400">
-                          Lock
-                        </span>
-                      )}
-                    </div>
-                    <p className="text-[11px] text-slate-500 dark:text-zinc-400 truncate font-medium">
-                      {step.sub}
-                    </p>
-                  </div>
-                </button>
-              )
-            })}
           </div>
         </section>
 
