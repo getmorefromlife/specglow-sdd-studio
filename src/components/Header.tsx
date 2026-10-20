@@ -63,12 +63,28 @@ export const Header: React.FC<HeaderProps> = ({ onOpenSettings, onOpenGuide }) =
 
           {/* Right Action Controls */}
           <div className="flex items-center gap-2.5 self-end md:self-auto">
-            {/* Active Provider Pill */}
-            <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-lg border text-xs font-medium bg-slate-50/80 dark:bg-zinc-900/80 border-slate-200/80 dark:border-zinc-800 text-slate-700 dark:text-zinc-300 shadow-xs">
+            {/* Active Provider Pill / Demo Mode Indicator */}
+            <button
+              onClick={onOpenSettings}
+              className={`hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-lg border text-xs font-semibold transition-all cursor-pointer shadow-xs ${
+                isConfigured
+                  ? 'bg-emerald-50/80 text-emerald-800 border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-800 hover:bg-emerald-100 dark:hover:bg-emerald-900/40'
+                  : 'bg-amber-50/80 text-amber-900 border-amber-200 dark:bg-amber-950/40 dark:text-amber-200 dark:border-amber-800 hover:bg-amber-100 dark:hover:bg-amber-900/40'
+              }`}
+              title={isConfigured ? 'Live BYOK AI Connected - Click to configure' : 'Running in Interactive Demo Mode - Click to connect your free Google Gemini or OpenAI key'}
+            >
               <span className={`w-2 h-2 rounded-full ${isConfigured ? 'bg-emerald-500 animate-pulse' : 'bg-amber-500'}`} />
-              <span className="font-semibold">{preset?.name || settings.providerPreset}</span>
-              <span className="text-slate-400 dark:text-zinc-500">({settings.model})</span>
-            </div>
+              {isConfigured ? (
+                <span>
+                  <strong className="text-emerald-700 dark:text-emerald-400">Live AI:</strong> {preset?.name || settings.providerPreset} ({settings.model})
+                </span>
+              ) : (
+                <span className="flex items-center gap-1.5">
+                  <span className="font-bold">Interactive Demo Mode</span>
+                  <span className="text-[10px] text-amber-700 dark:text-amber-400 font-normal underline">Connect Key</span>
+                </span>
+              )}
+            </button>
 
             {/* Workflow Guide Button */}
             <button

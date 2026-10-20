@@ -97,7 +97,7 @@ export const SpecificationViewer: React.FC<SpecificationViewerProps> = ({ packag
           </div>
 
           {/* Quick Metrics Header Pills */}
-          <div className="flex items-center gap-3">
+          <div className="grid grid-cols-3 gap-2 sm:flex sm:items-center sm:gap-3">
             <div className="px-3.5 py-1.5 rounded-lg border bg-slate-50/80 dark:bg-zinc-950 border-slate-200/70 dark:border-zinc-800 text-center shadow-xs">
               <div className="text-[10px] uppercase font-bold text-slate-500 dark:text-zinc-400">Story Points</div>
               <div className="text-base font-extrabold text-cyan-700 dark:text-cyan-400">

@@ -507,7 +507,7 @@ const ARCHITECTURE_HELP_DETAILS: Record<string, ArchitectureHelpDetail> = {
 }
 
 export const VisualWorkflowPage: React.FC = () => {
-  const { settings } = useSettings()
+  const { settings, isConfigured } = useSettings()
 
   // Stepper state (1 to 5)
   const [activeStage, setActiveStage] = useState<number>(1)
@@ -971,6 +971,76 @@ export const VisualWorkflowPage: React.FC = () => {
                 >
                   <span>✨ Get AI Recommendations →</span>
                 </button>
+              </div>
+
+              {/* Engine Status & Mode Callout Strip */}
+              <div className={`p-3 rounded-xl border flex flex-col sm:flex-row sm:items-center justify-between gap-2 shadow-xs transition-all ${
+                isConfigured
+                  ? 'bg-emerald-50/70 dark:bg-emerald-950/30 border-emerald-200 dark:border-emerald-800 text-emerald-900 dark:text-emerald-200'
+                  : 'bg-amber-50/70 dark:bg-amber-950/30 border-amber-200 dark:border-amber-800 text-amber-900 dark:text-amber-200'
+              }`}>
+                <div className="flex items-center gap-2">
+                  <span className={`w-2.5 h-2.5 rounded-full shrink-0 ${isConfigured ? 'bg-emerald-500 animate-pulse' : 'bg-amber-500'}`} />
+                  <span className="text-xs font-semibold">
+                    {isConfigured ? (
+                      <>
+                        <strong>Live BYOK AI Connected:</strong> Synthesizing directly with {settings.providerPreset.toUpperCase()} ({settings.model}). 100% in-browser privacy with zero third-party telemetry.
+                      </>
+                    ) : (
+                      <>
+                        <strong>Interactive Demo Simulator:</strong> Exploring with battle-tested enterprise reference templates. Connect a free Google Gemini or OpenAI key in Settings to synthesize custom live AI from your exact words.
+                      </>
+                    )}
+                  </span>
+                </div>
+                {!isConfigured && (
+                  <button
+                    type="button"
+                    onClick={() => setIsSettingsOpen(true)}
+                    className="text-xs font-bold text-amber-800 dark:text-amber-300 hover:underline flex items-center gap-1 cursor-pointer shrink-0"
+                  >
+                    <span>Connect Free API Key →</span>
+                  </button>
+                )}
+              </div>
+
+              {/* SDD Mental Model Educational Card (Why Blueprints Before Code?) */}
+              <div className="p-4 sm:p-5 rounded-xl bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white border border-indigo-800/60 space-y-3 shadow-md">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                  <h4 className="text-xs sm:text-sm font-bold uppercase tracking-wider text-cyan-300 flex items-center gap-2">
+                    <Sparkles className="w-4 h-4 text-cyan-400" />
+                    <span>Why Spec-Driven Blueprints Before Writing Code?</span>
+                  </h4>
+                  <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-cyan-950/80 text-cyan-300 border border-cyan-800 self-start sm:self-auto">
+                    The Modern AI Engineering Paradigm
+                  </span>
+                </div>
+                <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
+                  Asking AI tools (Cursor, Claude Code, Windsurf) to write raw code from a loose prompt causes <strong>context drift, regression bugs, and hallucinated dependencies</strong>. SpecGlow creates the rigid architectural contracts first. When your AI agents read these blueprints, they write production code with zero hallucinations.
+                </p>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 pt-1 text-xs">
+                  <div className="p-2.5 rounded-lg bg-white/5 border border-white/10 flex items-start gap-2">
+                    <span className="text-emerald-400 font-bold text-sm">✓</span>
+                    <div>
+                      <strong className="text-slate-100 block">Zero Context Collapse</strong>
+                      <span className="text-[11px] text-slate-400">Security & database invariants locked in constitution.md.</span>
+                    </div>
+                  </div>
+                  <div className="p-2.5 rounded-lg bg-white/5 border border-white/10 flex items-start gap-2">
+                    <span className="text-cyan-400 font-bold text-sm">✓</span>
+                    <div>
+                      <strong className="text-slate-100 block">100% Contract Match</strong>
+                      <span className="text-[11px] text-slate-400">Complete OpenAPI 3.1 contracts align frontend & backend.</span>
+                    </div>
+                  </div>
+                  <div className="p-2.5 rounded-lg bg-white/5 border border-white/10 flex items-start gap-2">
+                    <span className="text-purple-400 font-bold text-sm">✓</span>
+                    <div>
+                      <strong className="text-slate-100 block">1-Click Agent Handoff</strong>
+                      <span className="text-[11px] text-slate-400">Exports .cursorrules, CLAUDE.md, and atomic tasks.md.</span>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -1975,17 +2045,34 @@ export const VisualWorkflowPage: React.FC = () => {
                     className="px-5 py-2.5 rounded-xl font-bold text-sm bg-gradient-to-r from-cyan-600 to-teal-600 hover:from-cyan-500 hover:to-teal-500 text-white shadow-md flex items-center gap-2 cursor-pointer disabled:opacity-50"
                   >
                     <Zap className="w-4 h-4" />
-                    <span>{isLoading ? 'Synthesizing...' : 'Synthesize with Live AI'}</span>
+                    <span>
+                      {isLoading
+                        ? 'Synthesizing Blueprints...'
+                        : isConfigured
+                        ? `⚡ Synthesize via Live ${settings.providerPreset.toUpperCase()}`
+                        : '📘 Synthesize Reference Blueprint'}
+                    </span>
                   </button>
 
-                  <button
-                    onClick={() => executeSynthesis(true)}
-                    disabled={isLoading}
-                    className="px-5 py-2.5 rounded-xl font-bold text-sm bg-slate-100 dark:bg-zinc-800 hover:bg-slate-200 dark:hover:bg-zinc-700 text-slate-800 dark:text-zinc-200 border border-slate-200/90 dark:border-zinc-700 flex items-center gap-2 cursor-pointer disabled:opacity-50 shadow-xs"
-                  >
-                    <Play className="w-4 h-4 text-emerald-500" />
-                    <span>Instant Enterprise Demo</span>
-                  </button>
+                  {!isConfigured ? (
+                    <button
+                      type="button"
+                      onClick={() => setIsSettingsOpen(true)}
+                      className="px-4 py-2.5 rounded-xl font-bold text-xs bg-amber-50 dark:bg-amber-950/40 text-amber-900 dark:text-amber-200 border border-amber-300 dark:border-amber-800 hover:bg-amber-100 dark:hover:bg-amber-900/40 flex items-center gap-2 cursor-pointer shadow-xs transition-colors"
+                    >
+                      <Sparkles className="w-4 h-4 text-amber-500" />
+                      <span>Connect API Key for Live AI</span>
+                    </button>
+                  ) : (
+                    <button
+                      onClick={() => executeSynthesis(true)}
+                      disabled={isLoading}
+                      className="px-5 py-2.5 rounded-xl font-bold text-sm bg-slate-100 dark:bg-zinc-800 hover:bg-slate-200 dark:hover:bg-zinc-700 text-slate-800 dark:text-zinc-200 border border-slate-200/90 dark:border-zinc-700 flex items-center gap-2 cursor-pointer disabled:opacity-50 shadow-xs"
+                    >
+                      <Play className="w-4 h-4 text-emerald-500" />
+                      <span>Instant Reference Demo</span>
+                    </button>
+                  )}
                 </div>
               </div>
 
@@ -2143,6 +2230,45 @@ export const VisualWorkflowPage: React.FC = () => {
 
             {/* Quick Delivery Bundle Export Grid (Gated with progressive disclosure) */}
             <div className={!packageData ? 'opacity-35 grayscale pointer-events-none select-none blur-[0.5px] space-y-6' : 'space-y-6'}>
+              {/* Developer Execution Guide */}
+              <div className="p-5 rounded-2xl bg-gradient-to-r from-indigo-50/70 via-purple-50/50 to-cyan-50/70 dark:from-zinc-950 dark:via-zinc-900 dark:to-zinc-950 border border-indigo-200/80 dark:border-zinc-800 space-y-3 shadow-xs">
+                <div className="flex items-center gap-2">
+                  <Rocket className="w-4 h-4 text-indigo-600 dark:text-cyan-400" />
+                  <h4 className="text-sm sm:text-base font-bold text-slate-900 dark:text-white">
+                    How to Build This in Cursor, Claude Desktop & Windsurf
+                  </h4>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
+                  <div className="p-3 rounded-xl bg-white dark:bg-zinc-900 border border-slate-200/80 dark:border-zinc-800 space-y-1 shadow-xs">
+                    <div className="font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
+                      <span className="w-5 h-5 rounded-full bg-cyan-600 text-white font-mono text-[11px] flex items-center justify-center">1</span>
+                      <span>Extract Bundle</span>
+                    </div>
+                    <p className="text-slate-600 dark:text-zinc-400">
+                      Click <strong>Complete .ZIP Bundle</strong> below and extract files into your codebase root folder.
+                    </p>
+                  </div>
+                  <div className="p-3 rounded-xl bg-white dark:bg-zinc-900 border border-slate-200/80 dark:border-zinc-800 space-y-1 shadow-xs">
+                    <div className="font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
+                      <span className="w-5 h-5 rounded-full bg-indigo-600 text-white font-mono text-[11px] flex items-center justify-center">2</span>
+                      <span>Agents Auto-Detect</span>
+                    </div>
+                    <p className="text-slate-600 dark:text-zinc-400">
+                      Cursor and Claude Code automatically detect <code className="text-indigo-600 dark:text-indigo-400 font-semibold">.cursorrules</code> and <code className="text-indigo-600 dark:text-indigo-400 font-semibold">CLAUDE.md</code>.
+                    </p>
+                  </div>
+                  <div className="p-3 rounded-xl bg-white dark:bg-zinc-900 border border-slate-200/80 dark:border-zinc-800 space-y-1 shadow-xs">
+                    <div className="font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
+                      <span className="w-5 h-5 rounded-full bg-emerald-600 text-white font-mono text-[11px] flex items-center justify-center">3</span>
+                      <span>Execute Phase by Phase</span>
+                    </div>
+                    <p className="text-slate-600 dark:text-zinc-400">
+                      Tell your agent: <span className="italic font-semibold text-slate-800 dark:text-zinc-200">&quot;Execute Phase 1 in tasks.md&quot;</span>. The agent writes code compliant with your constitution.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
               <div className="space-y-3">
                 <h4 className="text-sm sm:text-base font-bold text-slate-900 dark:text-white">
                   Download Delivery Artifacts
