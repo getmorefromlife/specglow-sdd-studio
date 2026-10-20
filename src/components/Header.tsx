@@ -15,7 +15,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenSettings, onOpenGuide }) =
   const preset = PROVIDER_PRESETS[settings.providerPreset]
 
   return (
-    <header className="border-b transition-colors duration-200 border-slate-200 dark:border-zinc-800 bg-white/95 dark:bg-zinc-950/90 backdrop-blur-md sticky top-0 z-40">
+    <header className="border-b transition-colors duration-200 border-slate-200/70 dark:border-zinc-800 bg-white/95 dark:bg-zinc-950/90 backdrop-blur-md sticky top-0 z-40 shadow-[0_1px_8px_rgba(0,0,0,0.03)] dark:shadow-none">
       {/* Privacy Banner */}
       <div className="bg-gradient-to-r from-emerald-500/10 via-cyan-500/10 to-indigo-500/10 dark:from-emerald-950/40 dark:via-cyan-950/40 dark:to-indigo-950/40 border-b border-emerald-500/20 dark:border-emerald-500/30 px-4 py-1.5 text-center text-xs font-medium text-emerald-800 dark:text-emerald-300 flex items-center justify-center gap-2">
         <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400 shrink-0" />
@@ -64,7 +64,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenSettings, onOpenGuide }) =
           {/* Right Action Controls */}
           <div className="flex items-center gap-2.5 self-end md:self-auto">
             {/* Active Provider Pill */}
-            <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-lg border text-xs font-medium bg-slate-100 dark:bg-zinc-900/80 border-slate-300 dark:border-zinc-800 text-slate-700 dark:text-zinc-300">
+            <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-lg border text-xs font-medium bg-slate-50/80 dark:bg-zinc-900/80 border-slate-200/80 dark:border-zinc-800 text-slate-700 dark:text-zinc-300 shadow-xs">
               <span className={`w-2 h-2 rounded-full ${isConfigured ? 'bg-emerald-500 animate-pulse' : 'bg-amber-500'}`} />
               <span className="font-semibold">{preset?.name || settings.providerPreset}</span>
               <span className="text-slate-400 dark:text-zinc-500">({settings.model})</span>
@@ -73,7 +73,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenSettings, onOpenGuide }) =
             {/* Workflow Guide Button */}
             <button
               onClick={onOpenGuide}
-              className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-semibold border transition-all duration-200 bg-cyan-50 hover:bg-cyan-100 border-cyan-200 text-cyan-800 dark:bg-cyan-950/40 dark:hover:bg-cyan-900/50 dark:border-cyan-800 dark:text-cyan-300"
+              className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-semibold border transition-all duration-200 bg-cyan-50 hover:bg-cyan-100 border-cyan-200/80 text-cyan-800 dark:bg-cyan-950/40 dark:hover:bg-cyan-900/50 dark:border-cyan-800 dark:text-cyan-300 shadow-xs cursor-pointer"
               title="View the 5-step end-to-end workflow guide"
             >
               <BookOpen className="w-4 h-4 text-cyan-600 dark:text-cyan-400" />
@@ -84,7 +84,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenSettings, onOpenGuide }) =
             <button
               onClick={toggleTheme}
               aria-label="Toggle Day and Night Theme"
-              className="p-2 rounded-lg border transition-all duration-200 bg-slate-100 hover:bg-slate-200 border-slate-300 text-slate-800 dark:bg-zinc-900 dark:hover:bg-zinc-800 dark:border-zinc-700 dark:text-zinc-200 cursor-pointer"
+              className="p-2 rounded-lg border transition-all duration-200 bg-slate-50 hover:bg-slate-100 border-slate-200/80 text-slate-800 dark:bg-zinc-900 dark:hover:bg-zinc-800 dark:border-zinc-700 dark:text-zinc-200 shadow-xs cursor-pointer"
               title={theme === 'dark' ? 'Switch to Day Mode (Light)' : 'Switch to Night Mode (Dark)'}
             >
               {theme === 'dark' ? (

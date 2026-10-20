@@ -70,7 +70,7 @@ export const SpecificationViewer: React.FC<SpecificationViewerProps> = ({ packag
   return (
     <div className="space-y-6">
       {/* Top Metadata & Action Toolbar */}
-      <div className="bg-white dark:bg-zinc-900/95 border border-slate-200 dark:border-zinc-800 rounded-xl p-5 shadow-sm space-y-4">
+      <div className="bg-white dark:bg-zinc-900/95 border border-slate-200/70 dark:border-zinc-800 rounded-xl p-5 shadow-[0_2px_12px_rgba(0,0,0,0.03)] dark:shadow-none space-y-4">
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
           <div>
             <div className="flex flex-wrap items-center gap-2 mb-1.5">
@@ -97,19 +97,19 @@ export const SpecificationViewer: React.FC<SpecificationViewerProps> = ({ packag
 
           {/* Quick Metrics Header Pills */}
           <div className="flex items-center gap-3">
-            <div className="px-3.5 py-1.5 rounded-lg border bg-slate-50 dark:bg-zinc-950 border-slate-200 dark:border-zinc-800 text-center">
+            <div className="px-3.5 py-1.5 rounded-lg border bg-slate-50/80 dark:bg-zinc-950 border-slate-200/70 dark:border-zinc-800 text-center shadow-xs">
               <div className="text-[10px] uppercase font-bold text-slate-500 dark:text-zinc-400">Story Points</div>
               <div className="text-base font-extrabold text-cyan-700 dark:text-cyan-400">
                 {packageData.governance.forecasting.totalStoryPoints} pts
               </div>
             </div>
-            <div className="px-3.5 py-1.5 rounded-lg border bg-slate-50 dark:bg-zinc-950 border-slate-200 dark:border-zinc-800 text-center">
+            <div className="px-3.5 py-1.5 rounded-lg border bg-slate-50/80 dark:bg-zinc-950 border-slate-200/70 dark:border-zinc-800 text-center shadow-xs">
               <div className="text-[10px] uppercase font-bold text-slate-500 dark:text-zinc-400">Agent Cycle</div>
               <div className="text-base font-extrabold text-indigo-700 dark:text-indigo-400">
                 ~{packageData.taskGraph.totalEstimatedAgentMinutes}m
               </div>
             </div>
-            <div className="px-3.5 py-1.5 rounded-lg border bg-slate-50 dark:bg-zinc-950 border-slate-200 dark:border-zinc-800 text-center">
+            <div className="px-3.5 py-1.5 rounded-lg border bg-slate-50/80 dark:bg-zinc-950 border-slate-200/70 dark:border-zinc-800 text-center shadow-xs">
               <div className="text-[10px] uppercase font-bold text-slate-500 dark:text-zinc-400">Confidence</div>
               <div className="text-base font-extrabold text-emerald-700 dark:text-emerald-400">
                 {packageData.governance.forecasting.velocityConfidenceScore}%
@@ -119,7 +119,7 @@ export const SpecificationViewer: React.FC<SpecificationViewerProps> = ({ packag
         </div>
 
         {/* Global Export Actions Toolbar (Step 5) */}
-        <div className="pt-3 border-t border-slate-200 dark:border-zinc-800 flex flex-col gap-3">
+        <div className="pt-3 border-t border-slate-200/70 dark:border-zinc-800 flex flex-col gap-3">
           <div className="flex flex-wrap items-center justify-between gap-2.5">
             {/* Core & Agent Exports */}
             <div className="flex flex-wrap items-center gap-2">

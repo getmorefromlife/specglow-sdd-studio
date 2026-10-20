@@ -21,7 +21,8 @@ import {
   FileText,
   Terminal,
   Play,
-  Building2
+  Building2,
+  Lock
 } from 'lucide-react'
 import { useSettings } from '../context/SettingsContext'
 import { Header } from '../components/Header'
@@ -421,7 +422,7 @@ export const VisualWorkflowPage: React.FC = () => {
         )}
 
         {/* 5-STAGE INTERACTIVE PROGRESS PIPELINE (Large, Clear, High-Contrast) */}
-        <section className="bg-white dark:bg-zinc-900/80 rounded-2xl p-4 sm:p-6 border border-slate-200 dark:border-zinc-800 shadow-sm transition-colors">
+        <section className="bg-white dark:bg-zinc-900/80 rounded-2xl p-4 sm:p-6 border border-slate-200/70 dark:border-zinc-800/80 shadow-[0_2px_12px_rgba(0,0,0,0.03)] dark:shadow-none transition-colors">
           <div className="flex items-center justify-between mb-4">
             <div>
               <h2 className="text-lg sm:text-xl font-bold tracking-tight text-slate-900 dark:text-white">
@@ -431,7 +432,7 @@ export const VisualWorkflowPage: React.FC = () => {
                 Move step-by-step through the 5 stages of Spec-Driven Engineering. No guesswork.
               </p>
             </div>
-            <div className="hidden md:flex items-center gap-2 text-xs font-semibold px-3 py-1.5 rounded-full bg-cyan-50 dark:bg-cyan-950/60 text-cyan-700 dark:text-cyan-300 border border-cyan-200 dark:border-cyan-800">
+            <div className="hidden md:flex items-center gap-2 text-xs font-semibold px-3 py-1.5 rounded-full bg-cyan-50 dark:bg-cyan-950/60 text-cyan-700 dark:text-cyan-300 border border-cyan-200/80 dark:border-cyan-800 shadow-xs">
               <Sparkles className="w-3.5 h-3.5" />
               <span>Step {activeStage} of 5 Active</span>
             </div>
@@ -440,11 +441,11 @@ export const VisualWorkflowPage: React.FC = () => {
           {/* Stepper Buttons Bar */}
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 sm:gap-3">
             {[
-              { id: 1, label: '01. Vision', sub: 'The Raw Idea', icon: Lightbulb, isReady: !!input.requirement },
-              { id: 2, label: '02. Boundaries', sub: 'Laws & Rigor', icon: Globe, isReady: !!input.domain },
-              { id: 3, label: '03. Interview', sub: 'Architect Dilemmas', icon: MessageSquareCode, isReady: Object.keys(selectedDecisions).length > 0 },
-              { id: 4, label: '04. Blueprints', sub: '4-Pillar Suite', icon: Layers, isReady: !!packageData },
-              { id: 5, label: '05. Builders', sub: 'Agent Handoff', icon: Rocket, isReady: !!packageData }
+              { id: 1, label: '01. Vision', sub: 'The Raw Idea', icon: Lightbulb, isReady: !!input.requirement, isLocked: false },
+              { id: 2, label: '02. Boundaries', sub: 'Laws & Rigor', icon: Globe, isReady: !!input.domain, isLocked: false },
+              { id: 3, label: '03. Interview', sub: 'Architect Dilemmas', icon: MessageSquareCode, isReady: Object.keys(selectedDecisions).length > 0, isLocked: false },
+              { id: 4, label: '04. Blueprints', sub: packageData ? 'Suite Ready' : 'Synthesize Suite', icon: Layers, isReady: !!packageData, isLocked: !packageData },
+              { id: 5, label: '05. Builders', sub: packageData ? 'Ready for Handoff' : 'Locked (Needs S4)', icon: Rocket, isReady: !!packageData, isLocked: !packageData }
             ].map(step => {
               const Icon = step.icon
               const isActive = activeStage === step.id
@@ -456,10 +457,10 @@ export const VisualWorkflowPage: React.FC = () => {
                   onClick={() => setActiveStage(step.id)}
                   className={`relative flex items-center gap-3 p-3.5 rounded-xl border text-left transition-all cursor-pointer ${
                     isActive
-                      ? 'bg-cyan-50/80 dark:bg-cyan-950/50 border-cyan-500 dark:border-cyan-400 ring-2 ring-cyan-500/30 dark:ring-cyan-400/20 shadow-md'
+                      ? 'bg-cyan-50/80 dark:bg-cyan-950/50 border-cyan-500 dark:border-cyan-400 ring-2 ring-cyan-500/20 shadow-md'
                       : isDone
-                      ? 'bg-slate-50 dark:bg-zinc-800/60 border-slate-300 dark:border-zinc-700 hover:border-cyan-400'
-                      : 'bg-white dark:bg-zinc-900 border-slate-200 dark:border-zinc-800 hover:border-slate-300 dark:hover:border-zinc-700'
+                      ? 'bg-slate-50/90 dark:bg-zinc-800/60 border-slate-200/80 dark:border-zinc-700 hover:border-cyan-400 shadow-xs'
+                      : 'bg-white/90 dark:bg-zinc-900 border-slate-200/70 dark:border-zinc-800/80 hover:border-slate-300 dark:hover:border-zinc-700 shadow-xs'
                   }`}
                 >
                   <div
@@ -467,22 +468,37 @@ export const VisualWorkflowPage: React.FC = () => {
                       isActive
                         ? 'bg-cyan-600 text-white shadow-sm'
                         : isDone
-                        ? 'bg-emerald-500 text-white'
-                        : 'bg-slate-200 dark:bg-zinc-800 text-slate-700 dark:text-zinc-300'
+                        ? 'bg-emerald-500 text-white shadow-xs'
+                        : step.isLocked
+                        ? 'bg-slate-100 dark:bg-zinc-800 text-slate-400 dark:text-zinc-500'
+                        : 'bg-slate-100 dark:bg-zinc-800 text-slate-700 dark:text-zinc-300'
                     }`}
                   >
-                    {isDone ? <CheckCircle2 className="w-5 h-5" /> : <Icon className="w-4 h-4" />}
+                    {isDone ? (
+                      <CheckCircle2 className="w-5 h-5" />
+                    ) : step.isLocked ? (
+                      <Lock className="w-4 h-4 text-slate-400 dark:text-zinc-500" />
+                    ) : (
+                      <Icon className="w-4 h-4" />
+                    )}
                   </div>
                   <div className="min-w-0">
-                    <p
-                      className={`text-xs sm:text-sm font-bold truncate ${
-                        isActive
-                          ? 'text-cyan-900 dark:text-cyan-200'
-                          : 'text-slate-800 dark:text-zinc-200'
-                      }`}
-                    >
-                      {step.label}
-                    </p>
+                    <div className="flex items-center gap-1.5">
+                      <p
+                        className={`text-xs sm:text-sm font-bold truncate ${
+                          isActive
+                            ? 'text-cyan-900 dark:text-cyan-200'
+                            : 'text-slate-800 dark:text-zinc-200'
+                        }`}
+                      >
+                        {step.label}
+                      </p>
+                      {step.isLocked && (
+                        <span className="text-[9px] font-bold px-1.5 py-0.2 rounded bg-slate-100 dark:bg-zinc-800 text-slate-500 dark:text-zinc-400">
+                          Lock
+                        </span>
+                      )}
+                    </div>
                     <p className="text-[11px] text-slate-500 dark:text-zinc-400 truncate font-medium">
                       {step.sub}
                     </p>
@@ -497,9 +513,9 @@ export const VisualWorkflowPage: React.FC = () => {
         {/* STAGE 1: TELL YOUR VISION (The Raw Business Idea)             */}
         {/* ------------------------------------------------------------- */}
         {activeStage === 1 && (
-          <section className="bg-white dark:bg-zinc-900 rounded-2xl border border-slate-200 dark:border-zinc-800 p-6 sm:p-8 space-y-6 shadow-sm animate-fade-in">
+          <section className="bg-white dark:bg-zinc-900 rounded-2xl border border-slate-200/70 dark:border-zinc-800/80 p-6 sm:p-8 space-y-6 shadow-[0_2px_12px_rgba(0,0,0,0.03)] dark:shadow-none animate-fade-in">
             {/* Stage Plain English Banner */}
-            <div className="p-4 sm:p-5 rounded-xl bg-gradient-to-r from-amber-500/10 via-orange-500/10 to-amber-500/5 border border-amber-500/20 dark:border-amber-500/30">
+            <div className="p-4 sm:p-5 rounded-xl bg-gradient-to-r from-amber-500/10 via-orange-500/10 to-amber-500/5 border border-amber-500/20 dark:border-amber-500/30 shadow-xs">
               <div className="flex items-start gap-3">
                 <span className="text-2xl sm:text-3xl">☕</span>
                 <div>
@@ -513,23 +529,48 @@ export const VisualWorkflowPage: React.FC = () => {
               </div>
             </div>
 
-            {/* Input Text Area (Large, Spacious, Legible) */}
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
+            {/* Input Text Area with Clear Primary Visual Anchor */}
+            <div className="space-y-2.5">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                 <label className="text-sm sm:text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
                   <span>Your Initiative Description</span>
                   <span className="text-rose-500">*</span>
                 </label>
-                <span className="text-xs font-semibold text-slate-400 dark:text-zinc-500">
-                  {input.requirement.length} characters entered
-                </span>
+
+                {/* Primary Visual Anchor: 1-Click Enterprise Demo & Utilities */}
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => handleSelectStarter(STARTER_TEMPLATES[0])}
+                    className="px-3 py-1.5 rounded-lg text-xs font-bold bg-cyan-50 dark:bg-cyan-950/80 text-cyan-700 dark:text-cyan-300 border border-cyan-200/80 dark:border-cyan-800 hover:bg-cyan-100 dark:hover:bg-cyan-900/60 shadow-xs flex items-center gap-1.5 cursor-pointer transition-all"
+                    title="Pre-fill with Battle-Tested FinTech Multi-Currency Ledger Demo"
+                  >
+                    <Zap className="w-3.5 h-3.5 text-cyan-600 dark:text-cyan-400" />
+                    <span>⚡ Load Enterprise Demo</span>
+                  </button>
+
+                  {input.requirement && (
+                    <button
+                      type="button"
+                      onClick={() => setInput(prev => ({ ...prev, requirement: '' }))}
+                      className="px-2.5 py-1.5 rounded-lg text-xs font-medium text-slate-400 hover:text-slate-600 dark:hover:text-zinc-300 hover:bg-slate-100 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
+                    >
+                      Clear
+                    </button>
+                  )}
+
+                  <span className="text-xs font-semibold text-slate-400 dark:text-zinc-500 pl-1">
+                    {input.requirement.length} chars
+                  </span>
+                </div>
               </div>
+
               <textarea
                 value={input.requirement}
                 onChange={e => setInput(prev => ({ ...prev, requirement: e.target.value }))}
                 rows={5}
                 placeholder="e.g., We need an enterprise digital wallet and multi-currency ledger with sub-millisecond ACID settlement, distributed Redis idempotency locks, and PCI-DSS v4.0 audit logs..."
-                className="w-full text-base sm:text-lg leading-relaxed p-4 rounded-xl border border-slate-300 dark:border-zinc-700 bg-white dark:bg-zinc-950 text-slate-900 dark:text-zinc-100 placeholder-slate-400 dark:placeholder-zinc-600 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition-all shadow-inner"
+                className="w-full text-base sm:text-lg leading-relaxed p-4 rounded-xl border border-slate-200/90 dark:border-zinc-700 bg-white dark:bg-zinc-950 text-slate-900 dark:text-zinc-100 placeholder-slate-400 dark:placeholder-zinc-600 focus:outline-none focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500 transition-all shadow-[0_2px_8px_rgba(0,0,0,0.02)]"
               />
             </div>
 
@@ -560,7 +601,7 @@ export const VisualWorkflowPage: React.FC = () => {
                       className={`px-3 py-1 rounded-full text-xs font-bold transition-all cursor-pointer ${
                         selectedCategory === cat
                           ? 'bg-cyan-600 text-white shadow-xs'
-                          : 'bg-slate-100 dark:bg-zinc-800 text-slate-600 dark:text-zinc-400 hover:bg-slate-200 dark:hover:bg-zinc-700'
+                          : 'bg-slate-100/90 dark:bg-zinc-800 text-slate-600 dark:text-zinc-400 hover:bg-slate-200/80 dark:hover:bg-zinc-700'
                       }`}
                     >
                       {cat}
@@ -577,7 +618,7 @@ export const VisualWorkflowPage: React.FC = () => {
                   <button
                     key={starter.id}
                     onClick={() => handleSelectStarter(starter)}
-                    className="p-4 rounded-xl border border-slate-200 dark:border-zinc-800 bg-slate-50/60 dark:bg-zinc-950/60 hover:bg-cyan-50/50 dark:hover:bg-cyan-950/30 hover:border-cyan-400 dark:hover:border-cyan-500 text-left transition-all group cursor-pointer"
+                    className="p-4 rounded-xl border border-slate-200/70 dark:border-zinc-800/80 bg-white/70 dark:bg-zinc-950/60 hover:bg-cyan-50/50 dark:hover:bg-cyan-950/30 hover:border-cyan-400/80 dark:hover:border-cyan-500 text-left transition-all group cursor-pointer shadow-[0_1px_6px_rgba(0,0,0,0.02)] dark:shadow-none"
                   >
                     <div className="flex items-start justify-between gap-2">
                       <div className="flex items-center gap-2">
@@ -591,7 +632,7 @@ export const VisualWorkflowPage: React.FC = () => {
                           </span>
                         </div>
                       </div>
-                      <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-slate-200 dark:bg-zinc-800 text-slate-700 dark:text-zinc-300 shrink-0">
+                      <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-slate-100 dark:bg-zinc-800 text-slate-700 dark:text-zinc-300 shrink-0">
                         {starter.badge}
                       </span>
                     </div>
@@ -604,7 +645,7 @@ export const VisualWorkflowPage: React.FC = () => {
             </div>
 
             {/* Forward Navigation Bar */}
-            <div className="pt-4 border-t border-slate-200 dark:border-zinc-800 flex items-center justify-end">
+            <div className="pt-4 border-t border-slate-200/70 dark:border-zinc-800 flex items-center justify-end">
               <button
                 onClick={() => {
                   if (!input.requirement.trim()) {
@@ -627,9 +668,9 @@ export const VisualWorkflowPage: React.FC = () => {
         {/* STAGE 2: SET THE BOUNDARIES (Laws, Regulations & Rigor)       */}
         {/* ------------------------------------------------------------- */}
         {activeStage === 2 && (
-          <section className="bg-white dark:bg-zinc-900 rounded-2xl border border-slate-200 dark:border-zinc-800 p-6 sm:p-8 space-y-6 shadow-sm animate-fade-in">
+          <section className="bg-white dark:bg-zinc-900 rounded-2xl border border-slate-200/70 dark:border-zinc-800/80 p-6 sm:p-8 space-y-6 shadow-[0_2px_12px_rgba(0,0,0,0.03)] dark:shadow-none animate-fade-in">
             {/* Stage Plain English Banner */}
-            <div className="p-4 sm:p-5 rounded-xl bg-gradient-to-r from-cyan-500/10 via-blue-500/10 to-indigo-500/5 border border-cyan-500/20 dark:border-cyan-500/30">
+            <div className="p-4 sm:p-5 rounded-xl bg-gradient-to-r from-cyan-500/10 via-blue-500/10 to-indigo-500/5 border border-cyan-500/20 dark:border-cyan-500/30 shadow-xs">
               <div className="flex items-start gap-3">
                 <span className="text-2xl sm:text-3xl">🏛️</span>
                 <div>
@@ -657,10 +698,10 @@ export const VisualWorkflowPage: React.FC = () => {
                     <button
                       key={dom.id}
                       onClick={() => setInput(prev => ({ ...prev, domain: dom.id }))}
-                      className={`p-4 rounded-xl border text-left transition-all cursor-pointer ${
+                      className={`p-4 rounded-xl border text-left transition-all cursor-pointer shadow-[0_1px_6px_rgba(0,0,0,0.02)] dark:shadow-none ${
                         isSelected
-                          ? 'bg-cyan-50 dark:bg-cyan-950/60 border-cyan-500 dark:border-cyan-400 ring-2 ring-cyan-500/20 shadow-sm'
-                          : 'bg-white dark:bg-zinc-950 border-slate-200 dark:border-zinc-800 hover:border-slate-300 dark:hover:border-zinc-700'
+                          ? 'bg-cyan-50/80 dark:bg-cyan-950/60 border-cyan-500/80 dark:border-cyan-400 ring-2 ring-cyan-500/20 shadow-sm'
+                          : 'bg-white/90 dark:bg-zinc-950 border-slate-200/70 dark:border-zinc-800/80 hover:border-slate-300 dark:hover:border-zinc-700'
                       }`}
                     >
                       <div className="flex items-center gap-2">
@@ -678,7 +719,7 @@ export const VisualWorkflowPage: React.FC = () => {
               </div>
 
               {/* 16+ Specialized Regulatory Sub-Framework Selector */}
-              <div className="p-4 sm:p-5 rounded-xl border border-slate-200 dark:border-zinc-800 bg-slate-50/70 dark:bg-zinc-950/70 space-y-2.5">
+              <div className="p-4 sm:p-5 rounded-xl border border-slate-200/70 dark:border-zinc-800/80 bg-slate-50/70 dark:bg-zinc-950/70 space-y-2.5 shadow-xs">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
                   <label className="text-xs sm:text-sm font-bold text-slate-900 dark:text-zinc-100 flex items-center gap-2">
                     <ShieldCheck className="w-4 h-4 text-emerald-500 shrink-0" />
@@ -694,7 +735,7 @@ export const VisualWorkflowPage: React.FC = () => {
                 <select
                   value={input.domain}
                   onChange={e => setInput(prev => ({ ...prev, domain: e.target.value }))}
-                  className="w-full p-3 rounded-xl border border-slate-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-xs sm:text-sm font-bold text-slate-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-cyan-500 cursor-pointer shadow-inner"
+                  className="w-full p-3 rounded-xl border border-slate-200/90 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-xs sm:text-sm font-bold text-slate-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500 cursor-pointer shadow-xs"
                 >
                   {DOMAIN_CATEGORIES.map(cat => (
                     <optgroup key={cat.category} label={`${cat.icon} ${cat.category}`}>
@@ -742,10 +783,10 @@ export const VisualWorkflowPage: React.FC = () => {
                     <button
                       key={depth.id}
                       onClick={() => setInput(prev => ({ ...prev, targetDepth: depth.id }))}
-                      className={`p-4 rounded-xl border text-left transition-all cursor-pointer ${
+                      className={`p-4 rounded-xl border text-left transition-all cursor-pointer shadow-[0_1px_6px_rgba(0,0,0,0.02)] dark:shadow-none ${
                         isSelected
-                          ? 'bg-indigo-50 dark:bg-indigo-950/60 border-indigo-500 dark:border-indigo-400 ring-2 ring-indigo-500/20 shadow-sm'
-                          : 'bg-white dark:bg-zinc-950 border-slate-200 dark:border-zinc-800 hover:border-slate-300 dark:hover:border-zinc-700'
+                          ? 'bg-indigo-50/80 dark:bg-indigo-950/60 border-indigo-500/80 dark:border-indigo-400 ring-2 ring-indigo-500/20 shadow-sm'
+                          : 'bg-white/90 dark:bg-zinc-950 border-slate-200/70 dark:border-zinc-800/80 hover:border-slate-300 dark:hover:border-zinc-700'
                       }`}
                     >
                       <div className="flex items-center gap-2">
@@ -813,10 +854,10 @@ export const VisualWorkflowPage: React.FC = () => {
                       key={top.id}
                       type="button"
                       onClick={() => setInput(prev => ({ ...prev, companyStructure: top.id }))}
-                      className={`p-4 rounded-xl border text-left transition-all cursor-pointer ${
+                      className={`p-4 rounded-xl border text-left transition-all cursor-pointer shadow-[0_1px_6px_rgba(0,0,0,0.02)] dark:shadow-none ${
                         isSelected
-                          ? 'bg-cyan-50/80 dark:bg-cyan-950/60 border-cyan-500 dark:border-cyan-400 ring-2 ring-cyan-500/20 shadow-sm'
-                          : 'bg-white dark:bg-zinc-950 border-slate-200 dark:border-zinc-800 hover:border-slate-300 dark:hover:border-zinc-700'
+                          ? 'bg-cyan-50/80 dark:bg-cyan-950/60 border-cyan-500/80 dark:border-cyan-400 ring-2 ring-cyan-500/20 shadow-sm'
+                          : 'bg-white/90 dark:bg-zinc-950 border-slate-200/70 dark:border-zinc-800/80 hover:border-slate-300 dark:hover:border-zinc-700'
                       }`}
                     >
                       <div className="flex items-start justify-between gap-2">
@@ -845,7 +886,7 @@ export const VisualWorkflowPage: React.FC = () => {
                   value={input.companyStructure || ''}
                   onChange={e => setInput(prev => ({ ...prev, companyStructure: e.target.value }))}
                   placeholder="Or type a custom company hierarchy / team setup (e.g. 3 Frontend, 2 Go Backend, 1 SecOps Lead)..."
-                  className="w-full text-xs sm:text-sm p-3 rounded-xl border border-slate-300 dark:border-zinc-700 bg-white dark:bg-zinc-950 text-slate-900 dark:text-zinc-100 placeholder-slate-400 dark:placeholder-zinc-600 focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                  className="w-full text-xs sm:text-sm p-3 rounded-xl border border-slate-200/90 dark:border-zinc-700 bg-white dark:bg-zinc-950 text-slate-900 dark:text-zinc-100 placeholder-slate-400 dark:placeholder-zinc-600 focus:outline-none focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500 shadow-xs"
                 />
               </div>
             </div>
@@ -864,15 +905,15 @@ export const VisualWorkflowPage: React.FC = () => {
                 onChange={e => setInput(prev => ({ ...prev, brownfieldAssets: e.target.value }))}
                 rows={2}
                 placeholder="Paste existing SQL schemas, Prisma models, or OpenAPI snippets here to guarantee backward compatibility..."
-                className="w-full text-xs sm:text-sm p-3 rounded-xl border border-slate-300 dark:border-zinc-700 bg-white dark:bg-zinc-950 text-slate-900 dark:text-zinc-100 placeholder-slate-400 dark:placeholder-zinc-600 focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                className="w-full text-xs sm:text-sm p-3 rounded-xl border border-slate-200/90 dark:border-zinc-700 bg-white dark:bg-zinc-950 text-slate-900 dark:text-zinc-100 placeholder-slate-400 dark:placeholder-zinc-600 focus:outline-none focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500 shadow-xs"
               />
             </div>
 
             {/* Navigation Buttons */}
-            <div className="pt-4 border-t border-slate-200 dark:border-zinc-800 flex items-center justify-between">
+            <div className="pt-4 border-t border-slate-200/70 dark:border-zinc-800 flex items-center justify-between">
               <button
                 onClick={() => setActiveStage(1)}
-                className="px-5 py-2.5 rounded-xl font-bold text-sm text-slate-600 dark:text-zinc-300 hover:bg-slate-100 dark:hover:bg-zinc-800 border border-slate-200 dark:border-zinc-700 transition-colors flex items-center gap-2 cursor-pointer"
+                className="px-5 py-2.5 rounded-xl font-bold text-sm text-slate-600 dark:text-zinc-300 hover:bg-slate-100 dark:hover:bg-zinc-800 border border-slate-200/80 dark:border-zinc-700 transition-colors flex items-center gap-2 cursor-pointer shadow-xs"
               >
                 <ArrowLeft className="w-4 h-4" />
                 <span>Back to Vision</span>
@@ -892,9 +933,9 @@ export const VisualWorkflowPage: React.FC = () => {
         {/* STAGE 3: THE ARCHITECT'S INTERVIEW (The "Grill-Me" Loop)       */}
         {/* ------------------------------------------------------------- */}
         {activeStage === 3 && (
-          <section className="bg-white dark:bg-zinc-900 rounded-2xl border border-slate-200 dark:border-zinc-800 p-6 sm:p-8 space-y-6 shadow-sm animate-fade-in">
+          <section className="bg-white dark:bg-zinc-900 rounded-2xl border border-slate-200/70 dark:border-zinc-800/80 p-6 sm:p-8 space-y-6 shadow-[0_2px_12px_rgba(0,0,0,0.03)] dark:shadow-none animate-fade-in">
             {/* Stage Plain English Banner */}
-            <div className="p-4 sm:p-5 rounded-xl bg-gradient-to-r from-indigo-500/10 via-purple-500/10 to-indigo-500/5 border border-indigo-500/20 dark:border-indigo-500/30">
+            <div className="p-4 sm:p-5 rounded-xl bg-gradient-to-r from-indigo-500/10 via-purple-500/10 to-indigo-500/5 border border-indigo-500/20 dark:border-indigo-500/30 shadow-xs">
               <div className="flex items-start gap-3">
                 <span className="text-2xl sm:text-3xl">📐</span>
                 <div>
@@ -922,7 +963,7 @@ export const VisualWorkflowPage: React.FC = () => {
               <div className="flex items-center gap-2">
                 <button
                   onClick={handleAcceptAllRecommended}
-                  className="px-3.5 py-1.5 rounded-lg text-xs font-bold bg-indigo-50 text-indigo-700 dark:bg-indigo-950/80 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 hover:bg-indigo-100 dark:hover:bg-indigo-900/60 transition-colors flex items-center gap-1.5 cursor-pointer"
+                  className="px-3.5 py-1.5 rounded-lg text-xs font-bold bg-indigo-50 text-indigo-700 dark:bg-indigo-950/80 dark:text-indigo-300 border border-indigo-200/80 dark:border-indigo-800 hover:bg-indigo-100 dark:hover:bg-indigo-900/60 transition-colors flex items-center gap-1.5 cursor-pointer shadow-xs"
                 >
                   <Sparkles className="w-3.5 h-3.5" />
                   <span>Accept All Recommended Choices</span>
@@ -930,7 +971,7 @@ export const VisualWorkflowPage: React.FC = () => {
                 <button
                   onClick={() => loadQuestionsForDomain(input.domain)}
                   disabled={isQuestionsLoading}
-                  className="p-1.5 rounded-lg border border-slate-200 dark:border-zinc-700 text-slate-500 dark:text-zinc-400 hover:bg-slate-100 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
+                  className="p-1.5 rounded-lg border border-slate-200/80 dark:border-zinc-700 text-slate-500 dark:text-zinc-400 hover:bg-slate-100 dark:hover:bg-zinc-800 transition-colors cursor-pointer shadow-xs"
                   title="Reload questions"
                 >
                   <RefreshCw className={`w-4 h-4 ${isQuestionsLoading ? 'animate-spin' : ''}`} />
@@ -951,7 +992,7 @@ export const VisualWorkflowPage: React.FC = () => {
                 {questions.map((q, idx) => (
                   <div
                     key={q.id}
-                    className="p-5 rounded-xl border border-slate-200 dark:border-zinc-800 bg-slate-50/50 dark:bg-zinc-950/50 space-y-3"
+                    className="p-5 rounded-xl border border-slate-200/70 dark:border-zinc-800/80 bg-white/70 dark:bg-zinc-950/50 space-y-3 shadow-[0_1px_6px_rgba(0,0,0,0.02)] dark:shadow-none"
                   >
                     <div className="flex items-start justify-between gap-3">
                       <div>
@@ -975,10 +1016,10 @@ export const VisualWorkflowPage: React.FC = () => {
                         return (
                           <label
                             key={opt.id}
-                            className={`flex items-start gap-3 p-3.5 rounded-xl border transition-all cursor-pointer ${
+                            className={`flex items-start gap-3 p-3.5 rounded-xl border transition-all cursor-pointer shadow-xs ${
                               isSelected
-                                ? 'bg-indigo-50/80 dark:bg-indigo-950/50 border-indigo-500 dark:border-indigo-400 ring-1 ring-indigo-500/30'
-                                : 'bg-white dark:bg-zinc-900 border-slate-200 dark:border-zinc-800 hover:border-slate-300 dark:hover:border-zinc-700'
+                                ? 'bg-indigo-50/80 dark:bg-indigo-950/50 border-indigo-500/80 dark:border-indigo-400 ring-1 ring-indigo-500/30'
+                                : 'bg-white/90 dark:bg-zinc-900 border-slate-200/70 dark:border-zinc-800 hover:border-slate-300 dark:hover:border-zinc-700'
                             }`}
                           >
                             <input
@@ -994,7 +1035,7 @@ export const VisualWorkflowPage: React.FC = () => {
                                   {opt.label}
                                 </span>
                                 {opt.isRecommended && (
-                                  <span className="text-[10px] uppercase tracking-wider font-extrabold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800">
+                                  <span className="text-[10px] uppercase tracking-wider font-extrabold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300 border border-emerald-300/80 dark:border-emerald-800">
                                     Recommended
                                   </span>
                                 )}
@@ -1013,10 +1054,10 @@ export const VisualWorkflowPage: React.FC = () => {
             )}
 
             {/* Navigation Buttons */}
-            <div className="pt-4 border-t border-slate-200 dark:border-zinc-800 flex items-center justify-between">
+            <div className="pt-4 border-t border-slate-200/70 dark:border-zinc-800 flex items-center justify-between">
               <button
                 onClick={() => setActiveStage(2)}
-                className="px-5 py-2.5 rounded-xl font-bold text-sm text-slate-600 dark:text-zinc-300 hover:bg-slate-100 dark:hover:bg-zinc-800 border border-slate-200 dark:border-zinc-700 transition-colors flex items-center gap-2 cursor-pointer"
+                className="px-5 py-2.5 rounded-xl font-bold text-sm text-slate-600 dark:text-zinc-300 hover:bg-slate-100 dark:hover:bg-zinc-800 border border-slate-200/80 dark:border-zinc-700 transition-colors flex items-center gap-2 cursor-pointer shadow-xs"
               >
                 <ArrowLeft className="w-4 h-4" />
                 <span>Back to Boundaries</span>
@@ -1038,7 +1079,7 @@ export const VisualWorkflowPage: React.FC = () => {
         {activeStage === 4 && (
           <section className="space-y-6 animate-fade-in">
             {/* Stage Plain English Banner */}
-            <div className="p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-emerald-500/10 via-teal-500/10 to-emerald-500/5 border border-emerald-500/20 dark:border-emerald-500/30">
+            <div className="p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-emerald-500/10 via-teal-500/10 to-emerald-500/5 border border-emerald-500/20 dark:border-emerald-500/30 shadow-xs">
               <div className="flex items-start gap-3">
                 <span className="text-2xl sm:text-3xl">🏗️</span>
                 <div>
@@ -1053,7 +1094,7 @@ export const VisualWorkflowPage: React.FC = () => {
             </div>
 
             {/* Synthesis Launch Pad (If not generated or user wants to re-generate) */}
-            <div className="bg-white dark:bg-zinc-900 rounded-2xl border border-slate-200 dark:border-zinc-800 p-6 sm:p-8 space-y-6 shadow-sm">
+            <div className="bg-white dark:bg-zinc-900 rounded-2xl border border-slate-200/70 dark:border-zinc-800/80 p-6 sm:p-8 space-y-6 shadow-[0_2px_12px_rgba(0,0,0,0.03)] dark:shadow-none">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
                   <h4 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white">
@@ -1079,7 +1120,7 @@ export const VisualWorkflowPage: React.FC = () => {
                   <button
                     onClick={() => executeSynthesis(true)}
                     disabled={isLoading}
-                    className="px-5 py-2.5 rounded-xl font-bold text-sm bg-slate-100 dark:bg-zinc-800 hover:bg-slate-200 dark:hover:bg-zinc-700 text-slate-800 dark:text-zinc-200 border border-slate-300 dark:border-zinc-700 flex items-center gap-2 cursor-pointer disabled:opacity-50"
+                    className="px-5 py-2.5 rounded-xl font-bold text-sm bg-slate-100 dark:bg-zinc-800 hover:bg-slate-200 dark:hover:bg-zinc-700 text-slate-800 dark:text-zinc-200 border border-slate-200/90 dark:border-zinc-700 flex items-center gap-2 cursor-pointer disabled:opacity-50 shadow-xs"
                   >
                     <Play className="w-4 h-4 text-emerald-500" />
                     <span>Instant Enterprise Demo</span>
@@ -1089,7 +1130,7 @@ export const VisualWorkflowPage: React.FC = () => {
 
               {/* Animated Progress Display while Loading */}
               {isLoading && (
-                <div className="p-6 rounded-xl border border-cyan-500/30 bg-cyan-50/50 dark:bg-cyan-950/30 space-y-4">
+                <div className="p-6 rounded-xl border border-cyan-500/30 bg-cyan-50/50 dark:bg-cyan-950/30 space-y-4 shadow-inner">
                   <div className="flex items-center gap-3">
                     <RefreshCw className="w-6 h-6 text-cyan-600 dark:text-cyan-400 animate-spin" />
                     <div>
@@ -1113,7 +1154,7 @@ export const VisualWorkflowPage: React.FC = () => {
 
               {/* Quick Actions if Package Exists */}
               {packageData && (
-                <div className="flex flex-wrap items-center justify-between gap-3 pt-4 border-t border-slate-200 dark:border-zinc-800">
+                <div className="flex flex-wrap items-center justify-between gap-3 pt-4 border-t border-slate-200/70 dark:border-zinc-800">
                   <div className="flex items-center gap-2 text-xs font-semibold text-emerald-600 dark:text-emerald-400">
                     <CheckCircle2 className="w-4 h-4" />
                     <span>Governance Score: {packageData.governance.forecasting.velocityConfidenceScore}% • All Invariants Locked</span>
@@ -1122,21 +1163,21 @@ export const VisualWorkflowPage: React.FC = () => {
                   <div className="flex items-center gap-2">
                     <button
                       onClick={() => downloadSddZipBundle(packageData)}
-                      className="px-3.5 py-1.5 rounded-lg text-xs font-bold bg-slate-100 dark:bg-zinc-800 text-slate-700 dark:text-zinc-300 hover:bg-slate-200 dark:hover:bg-zinc-700 border border-slate-300 dark:border-zinc-700 flex items-center gap-1.5 cursor-pointer"
+                      className="px-3.5 py-1.5 rounded-lg text-xs font-bold bg-slate-50 dark:bg-zinc-800 text-slate-700 dark:text-zinc-300 hover:bg-slate-100 dark:hover:bg-zinc-700 border border-slate-200/80 dark:border-zinc-700 flex items-center gap-1.5 cursor-pointer shadow-xs"
                     >
                       <Download className="w-3.5 h-3.5" />
                       <span>Download .ZIP Bundle</span>
                     </button>
                     <button
                       onClick={() => downloadSddJsonBundle(packageData)}
-                      className="px-3.5 py-1.5 rounded-lg text-xs font-bold bg-slate-100 dark:bg-zinc-800 text-slate-700 dark:text-zinc-300 hover:bg-slate-200 dark:hover:bg-zinc-700 border border-slate-300 dark:border-zinc-700 flex items-center gap-1.5 cursor-pointer"
+                      className="px-3.5 py-1.5 rounded-lg text-xs font-bold bg-slate-50 dark:bg-zinc-800 text-slate-700 dark:text-zinc-300 hover:bg-slate-100 dark:hover:bg-zinc-700 border border-slate-200/80 dark:border-zinc-700 flex items-center gap-1.5 cursor-pointer shadow-xs"
                     >
                       <FileText className="w-3.5 h-3.5" />
                       <span>JSON Manifest</span>
                     </button>
                     <button
                       onClick={() => setActiveStage(5)}
-                      className="px-4 py-1.5 rounded-lg text-xs font-bold bg-cyan-600 hover:bg-cyan-500 text-white flex items-center gap-1.5 cursor-pointer"
+                      className="px-4 py-1.5 rounded-lg text-xs font-bold bg-cyan-600 hover:bg-cyan-500 text-white flex items-center gap-1.5 cursor-pointer shadow-xs"
                     >
                       <span>Proceed to Hand to Builders ➔</span>
                     </button>
@@ -1149,7 +1190,7 @@ export const VisualWorkflowPage: React.FC = () => {
             {packageData ? (
               <SpecificationViewer packageData={packageData} />
             ) : (
-              <div className="p-12 text-center bg-white dark:bg-zinc-900 rounded-2xl border border-dashed border-slate-300 dark:border-zinc-800 space-y-3">
+              <div className="p-12 text-center bg-white dark:bg-zinc-900 rounded-2xl border border-dashed border-slate-300/80 dark:border-zinc-800 space-y-3 shadow-xs">
                 <Layers className="w-10 h-10 text-slate-400 mx-auto" />
                 <h4 className="text-base font-bold text-slate-700 dark:text-zinc-300">
                   No Blueprints Synthesized Yet
@@ -1161,10 +1202,10 @@ export const VisualWorkflowPage: React.FC = () => {
             )}
 
             {/* Navigation Buttons */}
-            <div className="pt-4 border-t border-slate-200 dark:border-zinc-800 flex items-center justify-between">
+            <div className="pt-4 border-t border-slate-200/70 dark:border-zinc-800 flex items-center justify-between">
               <button
                 onClick={() => setActiveStage(3)}
-                className="px-5 py-2.5 rounded-xl font-bold text-sm text-slate-600 dark:text-zinc-300 hover:bg-slate-100 dark:hover:bg-zinc-800 border border-slate-200 dark:border-zinc-700 transition-colors flex items-center gap-2 cursor-pointer"
+                className="px-5 py-2.5 rounded-xl font-bold text-sm text-slate-600 dark:text-zinc-300 hover:bg-slate-100 dark:hover:bg-zinc-800 border border-slate-200/80 dark:border-zinc-700 transition-colors flex items-center gap-2 cursor-pointer shadow-xs"
               >
                 <ArrowLeft className="w-4 h-4" />
                 <span>Back to Interview</span>
@@ -1184,9 +1225,9 @@ export const VisualWorkflowPage: React.FC = () => {
         {/* STAGE 5: HAND TO THE BUILDERS (Agent Handoff & Simulator)     */}
         {/* ------------------------------------------------------------- */}
         {activeStage === 5 && (
-          <section className="bg-white dark:bg-zinc-900 rounded-2xl border border-slate-200 dark:border-zinc-800 p-6 sm:p-8 space-y-6 shadow-sm animate-fade-in">
+          <section className="bg-white dark:bg-zinc-900 rounded-2xl border border-slate-200/70 dark:border-zinc-800/80 p-6 sm:p-8 space-y-6 shadow-[0_2px_12px_rgba(0,0,0,0.03)] dark:shadow-none animate-fade-in">
             {/* Stage Plain English Banner */}
-            <div className="p-4 sm:p-5 rounded-xl bg-gradient-to-r from-violet-500/10 via-pink-500/10 to-violet-500/5 border border-violet-500/20 dark:border-violet-500/30">
+            <div className="p-4 sm:p-5 rounded-xl bg-gradient-to-r from-violet-500/10 via-pink-500/10 to-violet-500/5 border border-violet-500/20 dark:border-violet-500/30 shadow-xs">
               <div className="flex items-start gap-3">
                 <span className="text-2xl sm:text-3xl">🚀</span>
                 <div>
@@ -1200,165 +1241,206 @@ export const VisualWorkflowPage: React.FC = () => {
               </div>
             </div>
 
-            {/* Quick Delivery Bundle Export Grid */}
-            <div className="space-y-3">
-              <h4 className="text-sm sm:text-base font-bold text-slate-900 dark:text-white">
-                Download Delivery Artifacts
-              </h4>
-
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
-                <button
-                  onClick={() => {
-                    if (packageData) downloadSddZipBundle(packageData)
-                    else setErrorMessage('Please synthesize blueprints in Stage 4 first.')
-                  }}
-                  className="p-4 rounded-xl border border-slate-200 dark:border-zinc-800 bg-slate-50 dark:bg-zinc-950 hover:border-cyan-500 text-left transition-all cursor-pointer group"
-                >
-                  <div className="flex items-center gap-2">
-                    <Download className="w-5 h-5 text-cyan-500" />
-                    <h5 className="text-sm font-bold text-slate-900 dark:text-white group-hover:text-cyan-500">
-                      Complete .ZIP Bundle
-                    </h5>
-                  </div>
-                  <p className="text-xs text-slate-500 dark:text-zinc-400 mt-1.5 font-medium">
-                    All 18+ markdown files, OpenAPI specs, and security attestation in one archive.
-                  </p>
-                </button>
-
-                <button
-                  onClick={() => {
-                    if (packageData) downloadFile('jira-tasks.csv', generateJiraCsv(packageData), 'text/csv')
-                    else setErrorMessage('Please synthesize blueprints in Stage 4 first.')
-                  }}
-                  className="p-4 rounded-xl border border-slate-200 dark:border-zinc-800 bg-slate-50 dark:bg-zinc-950 hover:border-indigo-500 text-left transition-all cursor-pointer group"
-                >
-                  <div className="flex items-center gap-2">
-                    <FileText className="w-5 h-5 text-indigo-500" />
-                    <h5 className="text-sm font-bold text-slate-900 dark:text-white group-hover:text-indigo-500">
-                      Export Jira / Linear CSV
-                    </h5>
-                  </div>
-                  <p className="text-xs text-slate-500 dark:text-zinc-400 mt-1.5 font-medium">
-                    Sequenced tickets with acceptance criteria and story point estimates.
-                  </p>
-                </button>
-
-                <button
-                  onClick={() => {
-                    if (packageData) downloadMcpServer(packageData)
-                    else setErrorMessage('Please synthesize blueprints in Stage 4 first.')
-                  }}
-                  className="p-4 rounded-xl border border-slate-200 dark:border-zinc-800 bg-slate-50 dark:bg-zinc-950 hover:border-emerald-500 text-left transition-all cursor-pointer group"
-                >
-                  <div className="flex items-center gap-2">
-                    <Terminal className="w-5 h-5 text-emerald-500" />
-                    <h5 className="text-sm font-bold text-slate-900 dark:text-white group-hover:text-emerald-500">
-                      Download MCP Stdio Server
-                    </h5>
-                  </div>
-                  <p className="text-xs text-slate-500 dark:text-zinc-400 mt-1.5 font-medium">
-                    Standalone Model Context Protocol server exposing your spec to AI editors.
-                  </p>
-                </button>
-              </div>
-            </div>
-
-            {/* AI Agent Execution Prompts (Cursor / Claude / Copilot) */}
-            <div className="space-y-3 pt-2">
-              <h4 className="text-sm sm:text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                <Terminal className="w-4 h-4 text-cyan-500" />
-                <span>Ready-To-Run Prompts for AI Coding Agents</span>
-              </h4>
-
-              <div className="space-y-3">
-                {[
-                  {
-                    id: 'cursor',
-                    title: 'Cursor / Windsurf AI Rule Prompt',
-                    icon: '⚡',
-                    getPrompt: () => (packageData ? generateCursorRules(packageData) : 'Please synthesize Stage 4 first.')
-                  },
-                  {
-                    id: 'claude',
-                    title: 'Claude 3.5 Sonnet / Antigravity Master Agent Prompt',
-                    icon: '🧠',
-                    getPrompt: () => (packageData ? generateClaudeMd(packageData) : 'Please synthesize Stage 4 first.')
-                  },
-                  {
-                    id: 'agents',
-                    title: 'Universal AGENTS.md Directive (Antigravity / Devin / Copilot)',
-                    icon: '💻',
-                    getPrompt: () => (packageData ? generateAgentsMd(packageData) : 'Please synthesize Stage 4 first.')
-                  }
-                ].map(agent => (
-                  <div
-                    key={agent.id}
-                    className="p-4 rounded-xl border border-slate-200 dark:border-zinc-800 bg-slate-50/60 dark:bg-zinc-950/60 space-y-2"
-                  >
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <span>{agent.icon}</span>
-                        <span className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white">
-                          {agent.title}
-                        </span>
-                      </div>
-
-                      <button
-                        onClick={() => copyToClipboard(agent.getPrompt(), agent.id)}
-                        className="px-3 py-1 rounded-lg text-xs font-bold flex items-center gap-1.5 bg-white dark:bg-zinc-800 hover:bg-slate-100 dark:hover:bg-zinc-700 text-slate-700 dark:text-zinc-200 border border-slate-300 dark:border-zinc-700 transition-colors cursor-pointer"
-                      >
-                        {copiedPromptId === agent.id ? (
-                          <>
-                            <Check className="w-3.5 h-3.5 text-emerald-500" />
-                            <span className="text-emerald-600 dark:text-emerald-400">Copied!</span>
-                          </>
-                        ) : (
-                          <>
-                            <Copy className="w-3.5 h-3.5" />
-                            <span>Copy Prompt</span>
-                          </>
-                        )}
-                      </button>
-                    </div>
-
-                    <pre className="text-xs p-3 rounded-lg bg-slate-100 dark:bg-zinc-900 text-slate-700 dark:text-zinc-300 overflow-x-auto max-h-28 font-mono">
-                      {agent.getPrompt()}
-                    </pre>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Synthetic Delivery Simulator (Embedded) */}
-            {packageData && (
-              <div className="pt-4 border-t border-slate-200 dark:border-zinc-800 space-y-3">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h4 className="text-sm sm:text-base font-bold text-slate-900 dark:text-white">
-                      Synthetic Monte Carlo Delivery Forecast
-                    </h4>
-                    <p className="text-xs text-slate-500 dark:text-zinc-400">
-                      Simulate 1,000 synthetic agent execution runs against the task graph.
-                    </p>
-                  </div>
+            {/* PROGRESSIVE DISCLOSURE GATE: If no package synthesized yet */}
+            {!packageData ? (
+              <div className="p-8 sm:p-12 text-center bg-slate-50/70 dark:bg-zinc-950/60 rounded-2xl border border-dashed border-slate-300/80 dark:border-zinc-800 space-y-4 shadow-xs">
+                <div className="w-14 h-14 rounded-2xl bg-amber-50 dark:bg-amber-950/50 border border-amber-200 dark:border-amber-800 flex items-center justify-center mx-auto text-amber-600 dark:text-amber-400 shadow-xs">
+                  <Lock className="w-7 h-7" />
                 </div>
-
-                <DeliverySimulator
-                  totalStoryPoints={packageData.governance.forecasting.totalStoryPoints}
-                  recommendedSprintCount={packageData.governance.forecasting.recommendedSprintCount}
-                  totalEstimatedAgentMinutes={packageData.taskGraph.totalEstimatedAgentMinutes}
-                  taskCount={packageData.taskGraph.tasks.length}
-                  riskMatrix={packageData.governance.riskMatrix}
-                  confidenceScore={packageData.governance.forecasting.velocityConfidenceScore}
-                />
+                <div className="space-y-1.5 max-w-lg mx-auto">
+                  <h4 className="text-lg font-bold text-slate-900 dark:text-white">
+                    Stage 5 Locked: Blueprints Awaiting Synthesis
+                  </h4>
+                  <p className="text-xs sm:text-sm text-slate-500 dark:text-zinc-400 leading-relaxed">
+                    Delivery artifacts (18-file .ZIP bundle, Jira/Linear CSV, MCP server, and AI prompts) require approved architectural blueprints from Stage 4 before they can be generated.
+                  </p>
+                </div>
+                <div className="pt-2 flex flex-wrap items-center justify-center gap-3">
+                  <button
+                    onClick={() => executeSynthesis(true)}
+                    disabled={isLoading}
+                    className="px-5 py-2.5 rounded-xl font-bold text-sm bg-gradient-to-r from-cyan-600 to-teal-600 hover:from-cyan-500 hover:to-teal-500 text-white shadow-md flex items-center gap-2 cursor-pointer transition-all"
+                  >
+                    <Zap className="w-4 h-4" />
+                    <span>⚡ Synthesize Instant Demo Now</span>
+                  </button>
+                  <button
+                    onClick={() => setActiveStage(4)}
+                    className="px-5 py-2.5 rounded-xl font-bold text-sm bg-white dark:bg-zinc-800 text-slate-700 dark:text-zinc-300 hover:bg-slate-100 dark:hover:bg-zinc-700 border border-slate-200/90 dark:border-zinc-700 flex items-center gap-2 cursor-pointer shadow-xs"
+                  >
+                    <ArrowLeft className="w-4 h-4" />
+                    <span>Go to Stage 4 (Review Suite)</span>
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div className="p-3.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-300/80 dark:border-emerald-800 text-emerald-900 dark:text-emerald-300 text-xs sm:text-sm font-semibold flex items-center gap-2 shadow-xs animate-fade-in">
+                <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
+                <span>All 18+ Architecture Artifacts, Contracts, and Agent Prompts Unlocked & Ready for Handoff</span>
               </div>
             )}
 
+            {/* Quick Delivery Bundle Export Grid (Gated with progressive disclosure) */}
+            <div className={!packageData ? 'opacity-35 grayscale pointer-events-none select-none blur-[0.5px] space-y-6' : 'space-y-6'}>
+              <div className="space-y-3">
+                <h4 className="text-sm sm:text-base font-bold text-slate-900 dark:text-white">
+                  Download Delivery Artifacts
+                </h4>
+
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
+                  <button
+                    onClick={() => {
+                      if (packageData) downloadSddZipBundle(packageData)
+                      else setErrorMessage('Please synthesize blueprints in Stage 4 first.')
+                    }}
+                    className="p-4 rounded-xl border border-slate-200/70 dark:border-zinc-800 bg-white/80 dark:bg-zinc-950 hover:border-cyan-500 text-left transition-all cursor-pointer group shadow-[0_1px_6px_rgba(0,0,0,0.02)] dark:shadow-none"
+                  >
+                    <div className="flex items-center gap-2">
+                      <Download className="w-5 h-5 text-cyan-500" />
+                      <h5 className="text-sm font-bold text-slate-900 dark:text-white group-hover:text-cyan-500">
+                        Complete .ZIP Bundle
+                      </h5>
+                    </div>
+                    <p className="text-xs text-slate-500 dark:text-zinc-400 mt-1.5 font-medium">
+                      All 18+ markdown files, OpenAPI specs, and security attestation in one archive.
+                    </p>
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      if (packageData) downloadFile('jira-tasks.csv', generateJiraCsv(packageData), 'text/csv')
+                      else setErrorMessage('Please synthesize blueprints in Stage 4 first.')
+                    }}
+                    className="p-4 rounded-xl border border-slate-200/70 dark:border-zinc-800 bg-white/80 dark:bg-zinc-950 hover:border-indigo-500 text-left transition-all cursor-pointer group shadow-[0_1px_6px_rgba(0,0,0,0.02)] dark:shadow-none"
+                  >
+                    <div className="flex items-center gap-2">
+                      <FileText className="w-5 h-5 text-indigo-500" />
+                      <h5 className="text-sm font-bold text-slate-900 dark:text-white group-hover:text-indigo-500">
+                        Export Jira / Linear CSV
+                      </h5>
+                    </div>
+                    <p className="text-xs text-slate-500 dark:text-zinc-400 mt-1.5 font-medium">
+                      Sequenced tickets with acceptance criteria and story point estimates.
+                    </p>
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      if (packageData) downloadMcpServer(packageData)
+                      else setErrorMessage('Please synthesize blueprints in Stage 4 first.')
+                    }}
+                    className="p-4 rounded-xl border border-slate-200/70 dark:border-zinc-800 bg-white/80 dark:bg-zinc-950 hover:border-emerald-500 text-left transition-all cursor-pointer group shadow-[0_1px_6px_rgba(0,0,0,0.02)] dark:shadow-none"
+                  >
+                    <div className="flex items-center gap-2">
+                      <Terminal className="w-5 h-5 text-emerald-500" />
+                      <h5 className="text-sm font-bold text-slate-900 dark:text-white group-hover:text-emerald-500">
+                        Download MCP Stdio Server
+                      </h5>
+                    </div>
+                    <p className="text-xs text-slate-500 dark:text-zinc-400 mt-1.5 font-medium">
+                      Standalone Model Context Protocol server exposing your spec to AI editors.
+                    </p>
+                  </button>
+                </div>
+              </div>
+
+              {/* AI Agent Execution Prompts (Cursor / Claude / Copilot) */}
+              <div className="space-y-3 pt-2">
+                <h4 className="text-sm sm:text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                  <Terminal className="w-4 h-4 text-cyan-500" />
+                  <span>Ready-To-Run Prompts for AI Coding Agents</span>
+                </h4>
+
+                <div className="space-y-3">
+                  {[
+                    {
+                      id: 'cursor',
+                      title: 'Cursor / Windsurf AI Rule Prompt',
+                      icon: '⚡',
+                      getPrompt: () => (packageData ? generateCursorRules(packageData) : 'Please synthesize Stage 4 first.')
+                    },
+                    {
+                      id: 'claude',
+                      title: 'Claude 3.5 Sonnet / Antigravity Master Agent Prompt',
+                      icon: '🧠',
+                      getPrompt: () => (packageData ? generateClaudeMd(packageData) : 'Please synthesize Stage 4 first.')
+                    },
+                    {
+                      id: 'agents',
+                      title: 'Universal AGENTS.md Directive (Antigravity / Devin / Copilot)',
+                      icon: '💻',
+                      getPrompt: () => (packageData ? generateAgentsMd(packageData) : 'Please synthesize Stage 4 first.')
+                    }
+                  ].map(agent => (
+                    <div
+                      key={agent.id}
+                      className="p-4 rounded-xl border border-slate-200/70 dark:border-zinc-800 bg-white/70 dark:bg-zinc-950/60 space-y-2 shadow-[0_1px_6px_rgba(0,0,0,0.02)] dark:shadow-none"
+                    >
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <span>{agent.icon}</span>
+                          <span className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white">
+                            {agent.title}
+                          </span>
+                        </div>
+
+                        <button
+                          onClick={() => copyToClipboard(agent.getPrompt(), agent.id)}
+                          className="px-3 py-1 rounded-lg text-xs font-bold flex items-center gap-1.5 bg-white dark:bg-zinc-800 hover:bg-slate-100 dark:hover:bg-zinc-700 text-slate-700 dark:text-zinc-200 border border-slate-200/80 dark:border-zinc-700 transition-colors cursor-pointer shadow-xs"
+                        >
+                          {copiedPromptId === agent.id ? (
+                            <>
+                              <Check className="w-3.5 h-3.5 text-emerald-500" />
+                              <span className="text-emerald-600 dark:text-emerald-400">Copied!</span>
+                            </>
+                          ) : (
+                            <>
+                              <Copy className="w-3.5 h-3.5" />
+                              <span>Copy Prompt</span>
+                            </>
+                          )}
+                        </button>
+                      </div>
+
+                      <pre className="text-xs p-3 rounded-lg bg-slate-100/90 dark:bg-zinc-900 text-slate-700 dark:text-zinc-300 overflow-x-auto max-h-28 font-mono">
+                        {agent.getPrompt()}
+                      </pre>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Synthetic Delivery Simulator (Embedded) */}
+              {packageData && (
+                <div className="pt-4 border-t border-slate-200/70 dark:border-zinc-800 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h4 className="text-sm sm:text-base font-bold text-slate-900 dark:text-white">
+                        Synthetic Monte Carlo Delivery Forecast
+                      </h4>
+                      <p className="text-xs text-slate-500 dark:text-zinc-400">
+                        Simulate 1,000 synthetic agent execution runs against the task graph.
+                      </p>
+                    </div>
+                  </div>
+
+                  <DeliverySimulator
+                    totalStoryPoints={packageData.governance.forecasting.totalStoryPoints}
+                    recommendedSprintCount={packageData.governance.forecasting.recommendedSprintCount}
+                    totalEstimatedAgentMinutes={packageData.taskGraph.totalEstimatedAgentMinutes}
+                    taskCount={packageData.taskGraph.tasks.length}
+                    riskMatrix={packageData.governance.riskMatrix}
+                    confidenceScore={packageData.governance.forecasting.velocityConfidenceScore}
+                  />
+                </div>
+              )}
+            </div>
+
             {/* Navigation Buttons */}
-            <div className="pt-4 border-t border-slate-200 dark:border-zinc-800 flex items-center justify-between">
+            <div className="pt-4 border-t border-slate-200/70 dark:border-zinc-800 flex items-center justify-between">
               <button
                 onClick={() => setActiveStage(4)}
-                className="px-5 py-2.5 rounded-xl font-bold text-sm text-slate-600 dark:text-zinc-300 hover:bg-slate-100 dark:hover:bg-zinc-800 border border-slate-200 dark:border-zinc-700 transition-colors flex items-center gap-2 cursor-pointer"
+                className="px-5 py-2.5 rounded-xl font-bold text-sm text-slate-600 dark:text-zinc-300 hover:bg-slate-100 dark:hover:bg-zinc-800 border border-slate-200/80 dark:border-zinc-700 transition-colors flex items-center gap-2 cursor-pointer shadow-xs"
               >
                 <ArrowLeft className="w-4 h-4" />
                 <span>Back to Blueprints</span>
@@ -1373,7 +1455,7 @@ export const VisualWorkflowPage: React.FC = () => {
                   setPackageData(null)
                   setActiveStage(1)
                 }}
-                className="px-5 py-2.5 rounded-xl font-bold text-sm text-slate-700 dark:text-zinc-200 hover:bg-slate-100 dark:hover:bg-zinc-800 border border-slate-300 dark:border-zinc-700 transition-colors flex items-center gap-2 cursor-pointer"
+                className="px-5 py-2.5 rounded-xl font-bold text-sm text-slate-700 dark:text-zinc-200 hover:bg-slate-100 dark:hover:bg-zinc-800 border border-slate-200/80 dark:border-zinc-700 transition-colors flex items-center gap-2 cursor-pointer shadow-xs"
               >
                 <RefreshCw className="w-4 h-4" />
                 <span>Start Another Initiative</span>
@@ -1385,7 +1467,7 @@ export const VisualWorkflowPage: React.FC = () => {
         {/* ------------------------------------------------------------- */}
         {/* EDUCATIONAL MATRIX: OLD WAY VS SPECGLOW SDD (Collapsible)      */}
         {/* ------------------------------------------------------------- */}
-        <section className="bg-white dark:bg-zinc-900 rounded-2xl border border-slate-200 dark:border-zinc-800 p-6 sm:p-8 space-y-4 shadow-sm">
+        <section className="bg-white dark:bg-zinc-900 rounded-2xl border border-slate-200/70 dark:border-zinc-800/80 p-6 sm:p-8 space-y-4 shadow-[0_2px_12px_rgba(0,0,0,0.03)] dark:shadow-none">
           <h3 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
             <ShieldCheck className="w-5 h-5 text-cyan-500" />
             <span>Why Spec-Driven Engineering? (The Old Way vs The SpecGlow Standard)</span>
@@ -1394,7 +1476,7 @@ export const VisualWorkflowPage: React.FC = () => {
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs sm:text-sm border-collapse">
               <thead>
-                <tr className="border-b border-slate-200 dark:border-zinc-800 bg-slate-50 dark:bg-zinc-950/50">
+                <tr className="border-b border-slate-200/70 dark:border-zinc-800 bg-slate-50/80 dark:bg-zinc-950/50">
                   <th className="py-3 px-4 font-bold text-slate-700 dark:text-zinc-300">Phase</th>
                   <th className="py-3 px-4 font-bold text-rose-600 dark:text-rose-400">Old Way (Ad-Hoc AI Prompting)</th>
                   <th className="py-3 px-4 font-bold text-emerald-600 dark:text-emerald-400">The SpecGlow SDD Standard</th>
