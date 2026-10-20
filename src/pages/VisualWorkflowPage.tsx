@@ -28,17 +28,25 @@ import {
   Code,
   HelpCircle,
   Info,
-  X
+  X,
+  Mic
 } from 'lucide-react'
 import { useSettings } from '../context/SettingsContext'
 import { Header } from '../components/Header'
 import { HeroSection } from '../components/HeroSection'
 import { SettingsModal } from '../components/SettingsModal'
 import { GuideModal } from '../components/GuideModal'
+import { VoiceAssistantModal } from '../components/VoiceAssistantModal'
 import { SpecificationViewer } from '../components/SpecificationViewer'
 import { DeliverySimulator } from '../components/DeliverySimulator'
 import { synthesizeSddPackage } from '../services/aiService'
 import { generateInterrogationQuestions, DOMAIN_FALLBACK_QUESTIONS } from '../services/interrogationService'
+import {
+  analyzeAndRecommendArchitecture,
+  getOfflineRecommendation,
+  type ArchitectureRecommendation
+} from '../services/ideaAdvisorService'
+import type { ParsedVoiceIntent } from '../services/voiceIntentParser'
 import { saveInitiativeToDb } from '../utils/storageUtils'
 import { downloadSddZipBundle, downloadSddJsonBundle, downloadMcpServer, downloadEnvExample, downloadFile } from '../utils/exportUtils'
 import { generateCursorRules, generateClaudeMd, generateAgentsMd } from '../utils/agentRuleGenerators'
@@ -503,6 +511,10 @@ export const VisualWorkflowPage: React.FC = () => {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false)
   const [isGuideOpen, setIsGuideOpen] = useState(false)
   const [activeHelpTopic, setActiveHelpTopic] = useState<string | null>(null)
+  const [isVoiceModalOpen, setIsVoiceModalOpen] = useState(false)
+  const [isAdvisorModalOpen, setIsAdvisorModalOpen] = useState(false)
+  const [isAnalyzingIdea, setIsAnalyzingIdea] = useState(false)
+  const [ideaRecommendation, setIdeaRecommendation] = useState<ArchitectureRecommendation | null>(null)
 
   // Input state
   const [input, setInput] = useState<RequirementInput>({
@@ -545,10 +557,12 @@ export const VisualWorkflowPage: React.FC = () => {
     'GovTech & Defense'
   ]
 
-  const loadQuestionsForDomain = React.useCallback(async (_domainString?: string) => {
+  const loadQuestionsForDomain = React.useCallback(async (_domainString?: string, forceOffline: boolean = false) => {
     setIsQuestionsLoading(true)
     try {
-      const qList = await generateInterrogationQuestions(input, settings, true)
+      // Query live AI if user configured an API key, or use smart fallback
+      const shouldForceOffline = forceOffline || !settings.apiKey
+      const qList = await generateInterrogationQuestions(input, settings, shouldForceOffline)
       setQuestions(qList)
 
       // Auto-populate recommended choices
@@ -573,6 +587,44 @@ export const VisualWorkflowPage: React.FC = () => {
       loadQuestionsForDomain(input.domain)
     }
   }, [activeStage, input.domain, questions.length, loadQuestionsForDomain])
+
+  const handleApplyVoiceIntent = (intent: ParsedVoiceIntent) => {
+    setInput(prev => ({
+      ...prev,
+      requirement: intent.composedBrief,
+      domain: intent.detectedDomain || prev.domain,
+      targetDepth: intent.detectedDepth || prev.targetDepth
+    }))
+    setIsVoiceModalOpen(false)
+  }
+
+  const handleExploreIdeaWithAi = async () => {
+    setIsAdvisorModalOpen(true)
+    setIsAnalyzingIdea(true)
+    try {
+      const rec = await analyzeAndRecommendArchitecture(input.requirement, settings)
+      setIdeaRecommendation(rec)
+    } catch {
+      setIdeaRecommendation(getOfflineRecommendation(input.requirement))
+    } finally {
+      setIsAnalyzingIdea(false)
+    }
+  }
+
+  const handleApplyRecommendation = (rec: ArchitectureRecommendation) => {
+    setInput(prev => ({
+      ...prev,
+      requirement: rec.refinedBrief,
+      domain: rec.recommendedDomain,
+      platformTarget: rec.recommendedPlatformTarget,
+      techStack: rec.recommendedTechStack,
+      targetDepth: rec.recommendedDepth,
+      companyStructure: rec.recommendedCompanyStructure
+    }))
+    setIsAdvisorModalOpen(false)
+    loadQuestionsForDomain(rec.recommendedDomain)
+    setActiveStage(2)
+  }
 
   const handleSelectStarter = (starter: StarterTemplate) => {
     setInput(prev => ({
@@ -791,8 +843,8 @@ export const VisualWorkflowPage: React.FC = () => {
                   <span className="text-rose-500">*</span>
                 </label>
 
-                {/* Primary Visual Anchor: 1-Click Enterprise Demo & Utilities */}
-                <div className="flex items-center gap-2">
+                {/* Primary Visual Anchor: 1-Click Enterprise Demo, Voice & AI Advisor */}
+                <div className="flex flex-wrap items-center gap-2">
                   <button
                     type="button"
                     onClick={() => handleSelectStarter(STARTER_TEMPLATES[0])}
@@ -800,7 +852,27 @@ export const VisualWorkflowPage: React.FC = () => {
                     title="Pre-fill with Battle-Tested FinTech Multi-Currency Ledger Demo"
                   >
                     <Zap className="w-3.5 h-3.5 text-cyan-600 dark:text-cyan-400" />
-                    <span>⚡ Load Enterprise Demo</span>
+                    <span>⚡ Load Demo</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setIsVoiceModalOpen(true)}
+                    className="px-3 py-1.5 rounded-lg text-xs font-bold bg-gradient-to-r from-purple-500/10 to-indigo-500/10 text-purple-700 dark:text-purple-300 border border-purple-200/80 dark:border-purple-800 hover:bg-purple-100 dark:hover:bg-purple-900/60 shadow-xs flex items-center gap-1.5 cursor-pointer transition-all"
+                    title="Speak your idea using voice audio recording"
+                  >
+                    <Mic className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400" />
+                    <span>🎙️ Voice Co-Pilot</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={handleExploreIdeaWithAi}
+                    className="px-3 py-1.5 rounded-lg text-xs font-bold bg-gradient-to-r from-indigo-500/15 via-cyan-500/15 to-purple-500/15 text-indigo-700 dark:text-cyan-300 border border-indigo-200/80 dark:border-cyan-800 hover:bg-indigo-100 dark:hover:bg-indigo-900/60 shadow-xs flex items-center gap-1.5 cursor-pointer transition-all"
+                    title="Let AI analyze your idea and recommend the ideal platform, tech stack, and compliance"
+                  >
+                    <Sparkles className="w-3.5 h-3.5 text-indigo-600 dark:text-cyan-400" />
+                    <span>✨ AI Idea Advisor</span>
                   </button>
 
                   {input.requirement && (
@@ -823,9 +895,26 @@ export const VisualWorkflowPage: React.FC = () => {
                 value={input.requirement}
                 onChange={e => setInput(prev => ({ ...prev, requirement: e.target.value }))}
                 rows={5}
-                placeholder="e.g., We need an enterprise digital wallet and multi-currency ledger with sub-millisecond ACID settlement, distributed Redis idempotency locks, and PCI-DSS v4.0 audit logs..."
+                placeholder="e.g., We need an enterprise digital wallet and multi-currency ledger with sub-millisecond ACID settlement, distributed Redis idempotency locks, and PCI-DSS v4.0 audit logs... (or type your raw idea and click ✨ AI Idea Advisor above!)"
                 className="w-full text-base sm:text-lg leading-relaxed p-4 rounded-xl border border-slate-200/90 dark:border-zinc-700 bg-white dark:bg-zinc-950 text-slate-900 dark:text-zinc-100 placeholder-slate-400 dark:placeholder-zinc-600 focus:outline-none focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500 transition-all shadow-[0_2px_8px_rgba(0,0,0,0.02)]"
               />
+
+              {/* Guiding Hand Callout Strip */}
+              <div className="p-3 rounded-xl bg-gradient-to-r from-indigo-500/5 via-cyan-500/5 to-purple-500/5 border border-indigo-500/15 dark:border-indigo-500/20 flex flex-col sm:flex-row sm:items-center justify-between gap-2 shadow-xs">
+                <div className="flex items-center gap-2">
+                  <Sparkles className="w-4 h-4 text-indigo-500 shrink-0" />
+                  <span className="text-xs text-slate-600 dark:text-zinc-300 font-medium">
+                    Not sure what tech stack or platform to pick? Let AI analyze your idea and configure the entire architecture.
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  onClick={handleExploreIdeaWithAi}
+                  className="text-xs font-bold text-indigo-600 dark:text-cyan-400 hover:text-indigo-500 flex items-center gap-1 cursor-pointer shrink-0 self-start sm:self-auto"
+                >
+                  <span>✨ Get AI Recommendations →</span>
+                </button>
+              </div>
             </div>
 
             {/* 1-Click Starter Inspirations (Expandable & Categorized) */}
@@ -1487,21 +1576,25 @@ export const VisualWorkflowPage: React.FC = () => {
                 </p>
               </div>
 
-              <div className="flex items-center gap-2">
+              <div className="flex flex-wrap items-center gap-2">
                 <button
+                  type="button"
+                  onClick={() => loadQuestionsForDomain(input.domain, false)}
+                  disabled={isQuestionsLoading}
+                  className="px-3.5 py-1.5 rounded-lg text-xs font-bold bg-gradient-to-r from-indigo-600 via-purple-600 to-cyan-600 hover:from-indigo-500 hover:to-cyan-500 text-white transition-all flex items-center gap-2 cursor-pointer shadow-sm hover:shadow-indigo-500/20 disabled:opacity-50"
+                  title="Re-analyze your exact choices with AI and generate custom architectural dilemmas"
+                >
+                  <RefreshCw className={`w-3.5 h-3.5 ${isQuestionsLoading ? 'animate-spin' : ''}`} />
+                  <span>{isQuestionsLoading ? 'Analyzing & Generating...' : '🔄 Re-Generate Dilemmas for My Project (AI)'}</span>
+                </button>
+
+                <button
+                  type="button"
                   onClick={handleAcceptAllRecommended}
                   className="px-3.5 py-1.5 rounded-lg text-xs font-bold bg-indigo-50 text-indigo-700 dark:bg-indigo-950/80 dark:text-indigo-300 border border-indigo-200/80 dark:border-indigo-800 hover:bg-indigo-100 dark:hover:bg-indigo-900/60 transition-colors flex items-center gap-1.5 cursor-pointer shadow-xs"
                 >
                   <Sparkles className="w-3.5 h-3.5" />
-                  <span>Accept All Recommended Choices</span>
-                </button>
-                <button
-                  onClick={() => loadQuestionsForDomain(input.domain)}
-                  disabled={isQuestionsLoading}
-                  className="p-1.5 rounded-lg border border-slate-200/80 dark:border-zinc-700 text-slate-500 dark:text-zinc-400 hover:bg-slate-100 dark:hover:bg-zinc-800 transition-colors cursor-pointer shadow-xs"
-                  title="Reload questions"
-                >
-                  <RefreshCw className={`w-4 h-4 ${isQuestionsLoading ? 'animate-spin' : ''}`} />
+                  <span>Accept All Recommended</span>
                 </button>
               </div>
             </div>
@@ -2264,6 +2357,188 @@ export const VisualWorkflowPage: React.FC = () => {
           </div>
         )
       })()}
+
+      {/* Voice Co-Pilot & Audio Dictation Modal */}
+      <VoiceAssistantModal
+        isOpen={isVoiceModalOpen}
+        onClose={() => setIsVoiceModalOpen(false)}
+        onApplyIntent={handleApplyVoiceIntent}
+      />
+
+      {/* AI Idea Explorer & Architecture Advisor Modal */}
+      {isAdvisorModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/75 backdrop-blur-sm animate-fade-in">
+          <div className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl space-y-5 p-6 sm:p-7">
+            {/* Header */}
+            <div className="flex items-start justify-between gap-4 pb-4 border-b border-slate-200 dark:border-zinc-800">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 via-purple-600 to-cyan-500 flex items-center justify-center text-white shadow-md">
+                  <Sparkles className="w-5 h-5" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h3 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white">
+                      AI Architecture & Tech Advisor
+                    </h3>
+                    <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-800 dark:bg-indigo-950 dark:text-indigo-300">
+                      Guiding Hand
+                    </span>
+                  </div>
+                  <p className="text-xs text-slate-500 dark:text-zinc-400 mt-0.5">
+                    We analyze your raw idea and recommend the best domain, platform, and tech stack in plain English.
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsAdvisorModalOpen(false)}
+                className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-zinc-200 hover:bg-slate-100 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
+                aria-label="Close"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Input / Refinement Box */}
+            <div className="space-y-2">
+              <label className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-zinc-400">
+                Your Idea or Problem Statement
+              </label>
+              <textarea
+                value={input.requirement}
+                onChange={e => setInput(prev => ({ ...prev, requirement: e.target.value }))}
+                rows={3}
+                placeholder="Type your idea in plain English (e.g., 'An app for doctors to video call patients and send prescriptions', or 'A coffee shop mobile app with reward points')..."
+                className="w-full text-sm p-3 rounded-xl border border-slate-200 dark:border-zinc-700 bg-slate-50/50 dark:bg-zinc-950 text-slate-900 dark:text-zinc-100 placeholder-slate-400 dark:placeholder-zinc-600 focus:outline-none focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500"
+              />
+              <div className="flex justify-end">
+                <button
+                  type="button"
+                  onClick={handleExploreIdeaWithAi}
+                  disabled={isAnalyzingIdea || !input.requirement.trim()}
+                  className="px-4 py-2 rounded-xl text-xs font-bold bg-indigo-600 hover:bg-indigo-500 text-white shadow-sm transition-all flex items-center gap-2 cursor-pointer disabled:opacity-50"
+                >
+                  <Sparkles className={`w-3.5 h-3.5 ${isAnalyzingIdea ? 'animate-spin' : ''}`} />
+                  <span>{isAnalyzingIdea ? 'Analyzing Idea...' : 'Analyze Idea with AI'}</span>
+                </button>
+              </div>
+            </div>
+
+            {/* Loading State */}
+            {isAnalyzingIdea && (
+              <div className="py-10 flex flex-col items-center justify-center space-y-3">
+                <RefreshCw className="w-8 h-8 text-indigo-500 animate-spin" />
+                <p className="text-sm font-semibold text-slate-600 dark:text-zinc-400">
+                  Solutions Architect AI is evaluating platform targets, compliance regimes, and tech stacks...
+                </p>
+              </div>
+            )}
+
+            {/* Recommendation Result */}
+            {!isAnalyzingIdea && ideaRecommendation && (
+              <div className="space-y-4 pt-2 animate-fade-in">
+                {/* Plain-English summary banner */}
+                <div className="p-4 rounded-xl bg-gradient-to-r from-indigo-500/10 via-cyan-500/10 to-purple-500/10 border border-indigo-500/20 dark:border-indigo-500/30 flex items-start gap-3">
+                  <span className="text-2xl">💡</span>
+                  <div>
+                    <h4 className="text-xs font-bold uppercase tracking-wider text-indigo-950 dark:text-indigo-300 mb-1">
+                      Architectural Recommendation
+                    </h4>
+                    <p className="text-xs sm:text-sm text-slate-700 dark:text-zinc-200 leading-relaxed font-medium">
+                      {ideaRecommendation.plainEnglishSummary}
+                    </p>
+                  </div>
+                </div>
+
+                {/* 4 Recommendations Cards Grid */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {/* Recommended Domain */}
+                  <div className="p-3.5 rounded-xl border border-slate-200 dark:border-zinc-800 bg-slate-50/60 dark:bg-zinc-800/40 space-y-1">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-zinc-500">
+                      1. Regulatory Domain & Laws
+                    </span>
+                    <h5 className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white">
+                      {ideaRecommendation.recommendedDomain}
+                    </h5>
+                    <p className="text-[11px] text-slate-500 dark:text-zinc-400 leading-relaxed">
+                      {ideaRecommendation.domainRationale}
+                    </p>
+                  </div>
+
+                  {/* Recommended Platform Target */}
+                  <div className="p-3.5 rounded-xl border border-slate-200 dark:border-zinc-800 bg-slate-50/60 dark:bg-zinc-800/40 space-y-1">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-zinc-500">
+                      2. Platform Target
+                    </span>
+                    <h5 className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white capitalize">
+                      {ideaRecommendation.recommendedPlatformTarget.replace('-', ' ')}
+                    </h5>
+                    <p className="text-[11px] text-slate-500 dark:text-zinc-400 leading-relaxed">
+                      {ideaRecommendation.platformRationale}
+                    </p>
+                  </div>
+
+                  {/* Recommended Tech Stack */}
+                  <div className="p-3.5 rounded-xl border border-slate-200 dark:border-zinc-800 bg-slate-50/60 dark:bg-zinc-800/40 space-y-1">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-zinc-500">
+                      3. Preferred Tech Stack
+                    </span>
+                    <h5 className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white">
+                      {ideaRecommendation.recommendedTechStack}
+                    </h5>
+                    <p className="text-[11px] text-slate-500 dark:text-zinc-400 leading-relaxed">
+                      {ideaRecommendation.techStackRationale}
+                    </p>
+                  </div>
+
+                  {/* Recommended Delivery Rigor */}
+                  <div className="p-3.5 rounded-xl border border-slate-200 dark:border-zinc-800 bg-slate-50/60 dark:bg-zinc-800/40 space-y-1">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-zinc-500">
+                      4. Delivery Rigor & Topology
+                    </span>
+                    <h5 className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white">
+                      {ideaRecommendation.recommendedDepth}
+                    </h5>
+                    <p className="text-[11px] text-slate-500 dark:text-zinc-400 leading-relaxed">
+                      {ideaRecommendation.recommendedCompanyStructure}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Refined Vision Brief */}
+                <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-zinc-800/60 border border-slate-200 dark:border-zinc-800 space-y-1.5">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-zinc-500">
+                    Refined Vision Brief (Will be set as initiative description)
+                  </span>
+                  <p className="text-xs text-slate-700 dark:text-zinc-200 leading-relaxed font-mono">
+                    {ideaRecommendation.refinedBrief}
+                  </p>
+                </div>
+
+                {/* Footer apply action */}
+                <div className="flex flex-col-reverse sm:flex-row items-center justify-between gap-3 pt-3 border-t border-slate-200 dark:border-zinc-800">
+                  <button
+                    type="button"
+                    onClick={() => setIsAdvisorModalOpen(false)}
+                    className="w-full sm:w-auto px-4 py-2 rounded-xl text-xs font-semibold border border-slate-200 dark:border-zinc-700 hover:bg-slate-100 dark:hover:bg-zinc-800 text-slate-700 dark:text-zinc-300 transition-colors cursor-pointer"
+                  >
+                    Keep Current Settings
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => handleApplyRecommendation(ideaRecommendation)}
+                    className="w-full sm:w-auto px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-gradient-to-r from-indigo-600 via-cyan-600 to-emerald-600 hover:from-indigo-500 hover:to-emerald-500 text-white shadow-md transition-all cursor-pointer flex items-center justify-center gap-2"
+                  >
+                    <Check className="w-4 h-4" />
+                    <span>Apply All Recommendations & Proceed →</span>
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   )
 }
