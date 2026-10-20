@@ -83,6 +83,24 @@ export const GuideModal: React.FC<GuideModalProps> = ({ isOpen, onClose }) => {
               </div>
 
               <div className="p-2.5 rounded-lg border bg-white dark:bg-zinc-900 border-slate-200 dark:border-zinc-800">
+                <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-purple-100 text-purple-800 dark:bg-purple-950 dark:text-purple-300">
+                  🎙️ Voice Co-Pilot (Audio)
+                </span>
+                <p className="text-[11px] text-slate-600 dark:text-zinc-400 mt-1">
+                  Dictate your idea naturally using browser microphone speech-to-text; the system transcribes, detects domain, and auto-populates the brief.
+                </p>
+              </div>
+
+              <div className="p-2.5 rounded-lg border bg-white dark:bg-zinc-900 border-slate-200 dark:border-zinc-800">
+                <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-cyan-100 text-cyan-800 dark:bg-cyan-950 dark:text-cyan-300">
+                  ✨ AI Idea Advisor
+                </span>
+                <p className="text-[11px] text-slate-600 dark:text-zinc-400 mt-1">
+                  Unsure what platform or stack fits your idea? Click to let AI analyze your thoughts and recommend the ideal domain, platform, and tech stack in plain English.
+                </p>
+              </div>
+
+              <div className="p-2.5 rounded-lg border bg-white dark:bg-zinc-900 border-slate-200 dark:border-zinc-800">
                 <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300">
                   📁 Brownfield Assets (Optional)
                 </span>
@@ -92,11 +110,11 @@ export const GuideModal: React.FC<GuideModalProps> = ({ isOpen, onClose }) => {
               </div>
 
               <div className="p-2.5 rounded-lg border bg-white dark:bg-zinc-900 border-slate-200 dark:border-zinc-800">
-                <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-purple-100 text-purple-800 dark:bg-purple-950 dark:text-purple-300">
+                <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-violet-100 text-violet-800 dark:bg-violet-950 dark:text-violet-300">
                   🔄 Rehydrate Manifest
                 </span>
                 <p className="text-[11px] text-slate-600 dark:text-zinc-400 mt-1">
-                  Import an existing <code className="text-purple-600 dark:text-purple-400">sdd-manifest.json</code> to restore all 6 tabs, Monte Carlo forecasts, and diagrams into app state.
+                  Import an existing <code className="text-violet-600 dark:text-violet-400">sdd-manifest.json</code> to restore all 6 tabs, Monte Carlo forecasts, and diagrams into app state.
                 </p>
               </div>
             </div>
@@ -265,7 +283,7 @@ export const GuideModal: React.FC<GuideModalProps> = ({ isOpen, onClose }) => {
               </h3>
             </div>
             <p className="text-xs text-slate-700 dark:text-zinc-300 leading-relaxed ml-9">
-              Launch <strong>"Interrogate Architecture ('Grill-Me')"</strong> to challenge technical trade-offs before locking contracts (e.g., PostgreSQL RLS vs. Isolated DB, Asynchronous Event Bus vs. Webhooks). The confirmed decisions are injected directly into the project constitution and task dependencies. You can also click <strong>"Quick Synthesize"</strong> or <strong>"Instant Offline Demo"</strong> to test immediately.
+              Launch <strong>"Interrogate Architecture ('Grill-Me')"</strong> to challenge technical trade-offs before locking contracts (e.g., PostgreSQL RLS vs. Isolated DB, Asynchronous Event Bus vs. Webhooks). Click <strong>"🔄 Re-Generate Dilemmas for My Project (AI)"</strong> at any time to have AI formulate custom questions tailored to your exact platform target, tech stack, and regulatory compliance choices. You can accept recommended enterprise defaults with 1-click or test immediately with <strong>"Instant Offline Demo"</strong>.
             </p>
           </div>
 

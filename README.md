@@ -47,15 +47,27 @@ Eliminate agent hallucinated packages and mismatched styling conventions by lock
 - Designed for non-technical executives, product managers, and senior engineers alike, providing real-world analogies (e.g. *comparing Astro to a stripped-down racing bike or Next.js to an architect-designed home*), "Best Used For" criteria, and "When to Avoid" warnings.
 - Includes a 1-click **"Select This Option"** action directly inside the modal.
 
-### 4. 🌍 Multilingual & Right-to-Left (RTL) Support (Arabic / Urdu / English)
+### 4. 🎙️ In-Browser Voice Co-Pilot & Audio Dictation (Web Speech API)
+- Speak your idea or feature request naturally using your microphone with zero server audio streaming.
+- Built-in intent parser automatically transcribes your voice, detects the matching regulatory domain and delivery rigor, and drafts an initial engineering brief.
+
+### 5. ✨ AI Idea Explorer & Architecture Advisor ("The Guiding Hand")
+- Unsure how to structure an unrefined or raw concept? Click **"✨ AI Idea Advisor"** to get instant senior solutions architect advice.
+- Evaluates your idea against legal compliance regimes, user accessibility requirements, and technical scalability, returning a polished vision brief and concrete recommendations for Platform Target, Tech Stack, and Team Topology with 1-click apply.
+
+### 6. 🔄 Dynamic Dilemma Re-Generation (Live AI Interrogation)
+- In Stage 3, click **"🔄 Re-Generate Dilemmas for My Project (AI)"** at any time.
+- Queries live frontier AI (or intelligent heuristic engine) to formulate tailored architectural dilemmas specifically addressing your chosen platform target (e.g. mobile offline SQLite sync vs. REST, or high-volume Redis inventory locks vs. DB rows).
+
+### 7. 🌍 Multilingual & Right-to-Left (RTL) Support (Arabic / Urdu / English)
 - Enforces CSS logical properties (`ms-`, `me-`, `ps-`, `pe-`, `start-`, `end-`) instead of legacy physical coordinates (`ml-`, `mr-`, `pl-`, `pr-`, `left-`, `right-`).
 - Mandates dynamic `dir="rtl"` layout switching, bidirectional typography mirroring, and Google Noto Naskh Arabic & Noto Nastaliq Urdu fallbacks in all AI agent prompt directives.
 
-### 5. 🔑 Automated Production `.env.example` & Hosting Cloud Blueprints
+### 8. 🔑 Automated Production `.env.example` & Hosting Cloud Blueprints
 - Automatically generated `.env.example` file included in Step 5 and the master `.zip` export bundle, dynamically tailored to your initiative's target platform and database providers.
 - Comprehensive cloud production hosting blueprints documented in Pillar 4 (`governance.md`) for Vercel, Cloudflare R2, Supabase PostgreSQL, and Expo EAS.
 
-### 6. 🛡️ 6-Region Regulatory & Compliance Matrix (16+ Frameworks)
+### 9. 🛡️ 6-Region Regulatory & Compliance Matrix (16+ Frameworks)
 Tailor every synthesized specification to jurisdictional mandates across 7 distinct profiles:
 - **US / Canada (Federal & FinTech):** SOC 2 Type II, HIPAA, FedRAMP, CCPA, PCI-DSS v4.0, GLBA.
 - **EU / UK (GDPR & Digital Sovereignty):** GDPR (Articles 25/32), DORA, EU AI Act, NIS2, UK Data Protection Act.
@@ -114,13 +126,16 @@ flowchart LR
 - **Path 1A (1-Click Enterprise Presets):** Instant real-world initiatives across FinTech, HealthTech, and Cloud SaaS.
 - **Path 1B (Interactive PRD Composer):** Multi-archetype builder allowing engineers to combine topologies, capability engines, personas, and security invariants with custom architectural rationales.
 - **Path 1C (Direct PRD Textarea):** Direct markdown, meeting transcripts, or user stories.
+- **🎙️ Voice Co-Pilot (In-Browser Audio):** Speak your idea naturally using microphone dictation; the engine auto-transcribes, identifies the domain, and drafts the brief.
+- **✨ AI Idea Explorer & Advisor:** Click to let senior AI analyze your unrefined idea and recommend the optimal domain, platform target, and tech stack in plain English.
 - **📁 Brownfield Ingestion:** Paste existing schemas (`schema.prisma`, SQL DDL), `package.json`, or API routing files so the AI preserves and extends existing database tables and packages.
 - **🗄️ Saved Initiatives Library:** Access previously generated initiatives stored in browser IndexedDB with 1-click restore.
 - **🔄 Bidirectional Rehydration:** Click **"Import SDD Manifest"** to upload any previously exported `sdd-manifest.json` and restore all state into memory.
-- **🎙️ Voice Co-Pilot:** Dictate your feature idea and let the AI auto-configure the studio.
 
 ### **STEP 2: Industry Taxonomy, Regulatory Jurisdiction & Rigor**
 - **Domain Categories:** FinTech & Banking, HealthTech & Life Sciences, GovTech & Public Sector, Cloud B2B SaaS, Omnichannel Commerce, AI & Data Engineering, and Custom Domains.
+- **Platform Target Architecture:** Web Portals (Next.js/SSR), Mobile iOS & Android (Expo SDK 52), Enterprise B2B SaaS (Multi-Tenant RLS), or High-Volume E-Commerce.
+- **Preferred Tech Stack & UI:** Next.js 15 App Router + shadcn/ui, Astro 5, React Native Expo, Flutter 3.x, FastAPI + React 19, or Stack-Agnostic.
 - **6-Region Compliance Matrix:** Select from US/Canada, EU/UK, GCC/Middle East, ANZ, APAC, Pakistan, or Global Baseline.
 - **Delivery Rigor:**
   - *MVP / Fast-Track:* Rapid velocity, core happy paths, essential security guards.
@@ -129,8 +144,9 @@ flowchart LR
 
 ### **STEP 3: Architectural Interrogation ("Grill-Me" Loop) & Synthesis**
 - **🛡️ Architectural Interrogation (Grill-Me Loop):** Challenges assumptions before generation with 3 to 5 critical architectural dilemmas, including mandatory jurisdiction-specific dilemmas (e.g., GCC data residency, EU GDPR Article 25 privacy by design, or US HIPAA audit logging).
+- **🔄 Dynamic Project Dilemma Generator:** Click **"🔄 Re-Generate Dilemmas for My Project (AI)"** to have live AI analyze your exact requirements, platform target, and tech stack, formulating dilemmas specifically tailored to your technical architecture.
 - **Injected Invariants:** Confirmed trade-offs and brownfield assets are directly injected into prompt context and locked inside `constitution.md`.
-- **Flexible Modes:** Full interactive interrogation with custom trade-offs, standard defaults, or **Instant Offline Demo**.
+- **Flexible Modes:** Full interactive interrogation with custom trade-offs, 1-click standard defaults, or **Instant Offline Demo**.
 
 ### **STEP 4: Inspect 4-Pillars, Diagrams & Machine Contracts**
 - **6-Tab Navigation:**
