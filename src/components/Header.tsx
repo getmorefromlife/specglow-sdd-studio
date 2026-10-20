@@ -1,5 +1,5 @@
 import React from 'react'
-import { Settings as SettingsIcon, ShieldCheck, Sun, Moon, Cpu, Sparkles, BookOpen } from 'lucide-react'
+import { Settings as SettingsIcon, ShieldCheck, Sun, Moon, Sparkles, BookOpen } from 'lucide-react'
 import { useSettings } from '../context/SettingsContext'
 import { useTheme } from '../context/ThemeContext'
 import { PROVIDER_PRESETS } from '../utils/constants'
@@ -27,10 +27,16 @@ export const Header: React.FC<HeaderProps> = ({ onOpenSettings, onOpenGuide }) =
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           {/* Logo & Branding */}
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-600 to-indigo-600 p-0.5 shadow-md shadow-cyan-500/10">
-              <div className="w-full h-full rounded-[10px] bg-white dark:bg-zinc-900 flex items-center justify-center">
-                <Cpu className="w-5 h-5 text-cyan-600 dark:text-cyan-400" />
+          <div className="flex items-center gap-3.5">
+            <div className="relative group cursor-pointer">
+              {/* Ambient Glow */}
+              <div className="absolute -inset-1 rounded-2xl bg-gradient-to-r from-cyan-500/40 via-indigo-500/30 to-violet-500/40 blur-xs opacity-75 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
+              <div className="relative w-11 h-11 rounded-xl p-0.5 bg-gradient-to-br from-cyan-400 via-indigo-500 to-slate-900 shadow-md overflow-hidden border border-cyan-400/30 dark:border-cyan-500/40">
+                <img
+                  src="/logo.png"
+                  alt="SpecGlow SDD Studio Logo"
+                  className="w-full h-full object-cover rounded-[10px] transform group-hover:scale-105 transition-transform duration-200"
+                />
               </div>
             </div>
             <div>
