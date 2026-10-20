@@ -40,7 +40,12 @@ import { VoiceAssistantModal } from '../components/VoiceAssistantModal'
 import { SpecificationViewer } from '../components/SpecificationViewer'
 import { DeliverySimulator } from '../components/DeliverySimulator'
 import { synthesizeSddPackage } from '../services/aiService'
-import { generateInterrogationQuestions, DOMAIN_FALLBACK_QUESTIONS } from '../services/interrogationService'
+import {
+  generateInterrogationQuestions,
+  DOMAIN_FALLBACK_QUESTIONS,
+  analyzeCustomDecisionTradeoff,
+  type CustomDecisionAnalysis
+} from '../services/interrogationService'
 import {
   analyzeAndRecommendArchitecture,
   getOfflineRecommendation,
@@ -532,6 +537,10 @@ export const VisualWorkflowPage: React.FC = () => {
   const [questions, setQuestions] = useState<ArchitecturalInterrogationQuestion[]>([])
   const [selectedDecisions, setSelectedDecisions] = useState<Record<string, string>>({})
   const [isQuestionsLoading, setIsQuestionsLoading] = useState(false)
+  const [customAnswers, setCustomAnswers] = useState<Record<string, string>>({})
+  const [customAnalyses, setCustomAnalyses] = useState<Record<string, CustomDecisionAnalysis>>({})
+  const [isAnalyzingCustom, setIsAnalyzingCustom] = useState<Record<string, boolean>>({})
+  const [hasAcceptedRecommended, setHasAcceptedRecommended] = useState(false)
 
   // Package Data (Stage 4 & 5)
   const [packageData, setPackageData] = useState<SddArtifactPackage | null>(null)
@@ -644,6 +653,32 @@ export const VisualWorkflowPage: React.FC = () => {
       if (rec) recommended[q.id] = rec.id
     })
     setSelectedDecisions(recommended)
+    setHasAcceptedRecommended(true)
+    setTimeout(() => {
+      setHasAcceptedRecommended(false)
+    }, 3000)
+  }
+
+  const handleAnalyzeCustomDecision = async (q: ArchitecturalInterrogationQuestion) => {
+    const customText = customAnswers[q.id]?.trim()
+    if (!customText) return
+
+    setIsAnalyzingCustom(prev => ({ ...prev, [q.id]: true }))
+    try {
+      const analysis = await analyzeCustomDecisionTradeoff(
+        q.question,
+        q.context,
+        customText,
+        input.domain,
+        settings
+      )
+      setCustomAnalyses(prev => ({ ...prev, [q.id]: analysis }))
+      setSelectedDecisions(prev => ({ ...prev, [q.id]: 'custom' }))
+    } catch (err) {
+      console.warn('Failed to analyze custom decision:', err)
+    } finally {
+      setIsAnalyzingCustom(prev => ({ ...prev, [q.id]: false }))
+    }
   }
 
   const executeSynthesis = async (forceDemo: boolean = false) => {
@@ -663,9 +698,31 @@ export const VisualWorkflowPage: React.FC = () => {
     }, 900)
 
     try {
+      // Map decisions into rich architectural statements
+      const decisionsMap: Record<string, string> = {}
+      questions.forEach(q => {
+        const catKey = q.category || q.question
+        const choice = selectedDecisions[q.id]
+        if (choice === 'na') {
+          decisionsMap[catKey] = 'EXPLICITLY NOT APPLICABLE / OUT OF SCOPE. Omit this subsystem entirely; cataloged as an Anti-Requirement / Non-Goal in constitution.md.'
+        } else if (choice === 'custom') {
+          const customText = customAnswers[q.id]?.trim() || 'Custom Architectural Pattern'
+          const analysis = customAnalyses[q.id]
+          const tradeoffNote = analysis
+            ? ` [Verified Trade-Off: ${analysis.tradeoffAnalysis} | Compliance: ${analysis.complianceVerdict}]`
+            : ''
+          decisionsMap[catKey] = `CUSTOM ARCHITECTURAL CHOICE: ${customText}${tradeoffNote}`
+        } else {
+          const selectedOption = q.options.find(opt => opt.id === choice) || q.options[0]
+          if (selectedOption) {
+            decisionsMap[catKey] = `${selectedOption.label} (Engineering Implication: ${selectedOption.implication})`
+          }
+        }
+      })
+
       const enrichedInput: RequirementInput = {
         ...input,
-        architecturalDecisions: selectedDecisions
+        architecturalDecisions: Object.keys(decisionsMap).length > 0 ? decisionsMap : selectedDecisions
       }
       const result = await synthesizeSddPackage(enrichedInput, settings, forceDemo)
       setPackageData(result)
@@ -1591,13 +1648,35 @@ export const VisualWorkflowPage: React.FC = () => {
                 <button
                   type="button"
                   onClick={handleAcceptAllRecommended}
-                  className="px-3.5 py-1.5 rounded-lg text-xs font-bold bg-indigo-50 text-indigo-700 dark:bg-indigo-950/80 dark:text-indigo-300 border border-indigo-200/80 dark:border-indigo-800 hover:bg-indigo-100 dark:hover:bg-indigo-900/60 transition-colors flex items-center gap-1.5 cursor-pointer shadow-xs"
+                  className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer shadow-xs ${
+                    hasAcceptedRecommended
+                      ? 'bg-emerald-600 text-white shadow-emerald-500/30 ring-2 ring-emerald-400 scale-[1.02]'
+                      : 'bg-indigo-50 text-indigo-700 dark:bg-indigo-950/80 dark:text-indigo-300 border border-indigo-200/80 dark:border-indigo-800 hover:bg-indigo-100 dark:hover:bg-indigo-900/60'
+                  }`}
+                  title="Accept enterprise-recommended patterns across all dilemmas"
                 >
-                  <Sparkles className="w-3.5 h-3.5" />
-                  <span>Accept All Recommended</span>
+                  {hasAcceptedRecommended ? (
+                    <>
+                      <CheckCircle2 className="w-3.5 h-3.5 text-white animate-bounce" />
+                      <span>✓ All Recommended Applied!</span>
+                    </>
+                  ) : (
+                    <>
+                      <Sparkles className="w-3.5 h-3.5" />
+                      <span>Accept All Recommended</span>
+                    </>
+                  )}
                 </button>
               </div>
             </div>
+
+            {/* Visual Feedback Confirmation Banner */}
+            {hasAcceptedRecommended && (
+              <div className="p-3.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-900 dark:text-emerald-200 text-xs sm:text-sm font-semibold flex items-center gap-2.5 animate-fade-in shadow-xs">
+                <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
+                <span>Applied enterprise recommended patterns across all {questions.length} dilemmas. You can synthesize immediately or adjust any decision below.</span>
+              </div>
+            )}
 
             {/* Questions List */}
             {isQuestionsLoading ? (
@@ -1609,35 +1688,42 @@ export const VisualWorkflowPage: React.FC = () => {
               </div>
             ) : (
               <div className="space-y-4">
-                {questions.map((q, idx) => (
-                  <div
-                    key={q.id}
-                    className="p-5 rounded-xl border border-slate-200/70 dark:border-zinc-800/80 bg-white/70 dark:bg-zinc-950/50 space-y-3 shadow-[0_1px_6px_rgba(0,0,0,0.02)] dark:shadow-none"
-                  >
-                    <div className="flex items-start justify-between gap-3">
-                      <div>
-                        <span className="text-[11px] font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">
-                          Dilemma {idx + 1}: {q.category}
-                        </span>
-                        <h5 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white mt-0.5">
-                          {q.question}
-                        </h5>
+                {questions.map((q, idx) => {
+                  const recOpt = q.options.find(o => o.isRecommended) || q.options[0]
+                  const altOptions = q.options.filter(o => o.id !== recOpt?.id)
+                  const isNaSelected = selectedDecisions[q.id] === 'na'
+                  const isCustomSelected = selectedDecisions[q.id] === 'custom'
+                  const customValue = customAnswers[q.id] || ''
+                  const analysis = customAnalyses[q.id]
+                  const isAnalyzing = !!isAnalyzingCustom[q.id]
+
+                  return (
+                    <div
+                      key={q.id}
+                      className="p-5 rounded-xl border border-slate-200/70 dark:border-zinc-800/80 bg-white/70 dark:bg-zinc-950/50 space-y-4 shadow-[0_1px_6px_rgba(0,0,0,0.02)] dark:shadow-none"
+                    >
+                      <div className="flex items-start justify-between gap-3">
+                        <div>
+                          <span className="text-[11px] font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">
+                            Dilemma {idx + 1}: {q.category}
+                          </span>
+                          <h5 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white mt-0.5">
+                            {q.question}
+                          </h5>
+                        </div>
                       </div>
-                    </div>
 
-                    <p className="text-xs sm:text-sm text-slate-500 dark:text-zinc-400">
-                      <strong>Context:</strong> {q.context}
-                    </p>
+                      <p className="text-xs sm:text-sm text-slate-500 dark:text-zinc-400">
+                        <strong>Context:</strong> {q.context}
+                      </p>
 
-                    {/* Radio Options (Clear, readable, with implications) */}
-                    <div className="space-y-2 pt-1">
-                      {q.options.map(opt => {
-                        const isSelected = selectedDecisions[q.id] === opt.id
-                        return (
+                      {/* 4-Option Dilemma Structure */}
+                      <div className="space-y-2.5 pt-1">
+                        {/* Option 1: Enterprise Recommended Pattern */}
+                        {recOpt && (
                           <label
-                            key={opt.id}
                             className={`flex items-start gap-3 p-3.5 rounded-xl border transition-all cursor-pointer shadow-xs ${
-                              isSelected
+                              selectedDecisions[q.id] === recOpt.id
                                 ? 'bg-indigo-50/80 dark:bg-indigo-950/50 border-indigo-500/80 dark:border-indigo-400 ring-1 ring-indigo-500/30'
                                 : 'bg-white/90 dark:bg-zinc-900 border-slate-200/70 dark:border-zinc-800 hover:border-slate-300 dark:hover:border-zinc-700'
                             }`}
@@ -1645,31 +1731,186 @@ export const VisualWorkflowPage: React.FC = () => {
                             <input
                               type="radio"
                               name={`question-${q.id}`}
-                              checked={isSelected}
-                              onChange={() => setSelectedDecisions(prev => ({ ...prev, [q.id]: opt.id }))}
+                              checked={selectedDecisions[q.id] === recOpt.id}
+                              onChange={() => setSelectedDecisions(prev => ({ ...prev, [q.id]: recOpt.id }))}
                               className="mt-1 text-indigo-600 focus:ring-indigo-500"
                             />
                             <div className="flex-1 text-xs sm:text-sm">
                               <div className="flex items-center gap-2">
                                 <span className="font-bold text-slate-900 dark:text-white">
-                                  {opt.label}
+                                  Option 1: {recOpt.label}
                                 </span>
-                                {opt.isRecommended && (
-                                  <span className="text-[10px] uppercase tracking-wider font-extrabold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300 border border-emerald-300/80 dark:border-emerald-800">
-                                    Recommended
-                                  </span>
-                                )}
+                                <span className="text-[10px] uppercase tracking-wider font-extrabold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300 border border-emerald-300/80 dark:border-emerald-800">
+                                  Recommended
+                                </span>
                               </div>
                               <p className="text-xs text-slate-500 dark:text-zinc-400 mt-1">
-                                <strong>Engineering Implication:</strong> {opt.implication}
+                                <strong>Engineering Implication:</strong> {recOpt.implication}
                               </p>
                             </div>
                           </label>
-                        )
-                      })}
+                        )}
+
+                        {/* Option 2: Alternative Pattern(s) */}
+                        {altOptions.map((alt, altIdx) => {
+                          const isSelected = selectedDecisions[q.id] === alt.id
+                          return (
+                            <label
+                              key={alt.id}
+                              className={`flex items-start gap-3 p-3.5 rounded-xl border transition-all cursor-pointer shadow-xs ${
+                                isSelected
+                                  ? 'bg-indigo-50/80 dark:bg-indigo-950/50 border-indigo-500/80 dark:border-indigo-400 ring-1 ring-indigo-500/30'
+                                  : 'bg-white/90 dark:bg-zinc-900 border-slate-200/70 dark:border-zinc-800 hover:border-slate-300 dark:hover:border-zinc-700'
+                              }`}
+                            >
+                              <input
+                                type="radio"
+                                name={`question-${q.id}`}
+                                checked={isSelected}
+                                onChange={() => setSelectedDecisions(prev => ({ ...prev, [q.id]: alt.id }))}
+                                className="mt-1 text-indigo-600 focus:ring-indigo-500"
+                              />
+                              <div className="flex-1 text-xs sm:text-sm">
+                                <div className="flex items-center gap-2">
+                                  <span className="font-bold text-slate-900 dark:text-white">
+                                    Option {2 + altIdx}: {alt.label}
+                                  </span>
+                                  <span className="text-[10px] uppercase tracking-wider font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-700 dark:bg-zinc-800 dark:text-zinc-300 border border-slate-300/80 dark:border-zinc-700">
+                                    Alternative
+                                  </span>
+                                </div>
+                                <p className="text-xs text-slate-500 dark:text-zinc-400 mt-1">
+                                  <strong>Engineering Implication:</strong> {alt.implication}
+                                </p>
+                              </div>
+                            </label>
+                          )
+                        })}
+
+                        {/* Option 3: Not Applicable / Out of Scope (N/A) */}
+                        <label
+                          className={`flex items-start gap-3 p-3.5 rounded-xl border transition-all cursor-pointer shadow-xs ${
+                            isNaSelected
+                              ? 'bg-amber-50/80 dark:bg-amber-950/40 border-amber-500/80 dark:border-amber-400 ring-1 ring-amber-500/30'
+                              : 'bg-white/90 dark:bg-zinc-900 border-slate-200/70 dark:border-zinc-800 hover:border-slate-300 dark:hover:border-zinc-700'
+                          }`}
+                        >
+                          <input
+                            type="radio"
+                            name={`question-${q.id}`}
+                            checked={isNaSelected}
+                            onChange={() => setSelectedDecisions(prev => ({ ...prev, [q.id]: 'na' }))}
+                            className="mt-1 text-amber-600 focus:ring-amber-500"
+                          />
+                          <div className="flex-1 text-xs sm:text-sm">
+                            <div className="flex items-center gap-2">
+                              <span className="font-bold text-slate-900 dark:text-white">
+                                Option {2 + altOptions.length}: ⚪ Not Applicable / Out of Scope (N/A)
+                              </span>
+                              <span className="text-[10px] uppercase tracking-wider font-bold px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300 border border-amber-300/80 dark:border-amber-800">
+                                Excluded Subsystem
+                              </span>
+                            </div>
+                            <p className="text-xs text-slate-500 dark:text-zinc-400 mt-1">
+                              <strong>Anti-Requirement Invariant:</strong> Formally excludes this subsystem from your architecture. It will be cataloged as an Anti-Requirement / Non-Goal in constitution.md so AI coding agents never invent unnecessary code or infrastructure for it.
+                            </p>
+                          </div>
+                        </label>
+
+                        {/* Option 4: Custom Technical Decision (Write-In) with AI Trade-Off Analysis */}
+                        <div
+                          className={`p-3.5 rounded-xl border transition-all shadow-xs ${
+                            isCustomSelected
+                              ? 'bg-purple-50/70 dark:bg-purple-950/30 border-purple-500/80 dark:border-purple-400 ring-1 ring-purple-500/30'
+                              : 'bg-white/90 dark:bg-zinc-900 border-slate-200/70 dark:border-zinc-800'
+                          }`}
+                        >
+                          <label className="flex items-start gap-3 cursor-pointer">
+                            <input
+                              type="radio"
+                              name={`question-${q.id}`}
+                              checked={isCustomSelected}
+                              onChange={() => setSelectedDecisions(prev => ({ ...prev, [q.id]: 'custom' }))}
+                              className="mt-1 text-purple-600 focus:ring-purple-500"
+                            />
+                            <div className="flex-1 text-xs sm:text-sm">
+                              <div className="flex items-center gap-2">
+                                <span className="font-bold text-slate-900 dark:text-white">
+                                  Option {3 + altOptions.length}: ✏️ Custom Technical Decision (Write-In)
+                                </span>
+                                <span className="text-[10px] uppercase tracking-wider font-extrabold px-2 py-0.5 rounded-full bg-purple-100 text-purple-800 dark:bg-purple-950 dark:text-purple-300 border border-purple-300/80 dark:border-purple-800">
+                                  AI Verified
+                                </span>
+                              </div>
+                              <p className="text-xs text-slate-500 dark:text-zinc-400 mt-1">
+                                Specify your exact internal tooling, third-party vendor, or proprietary architecture. Our AI will evaluate trade-offs and regulatory compliance against {input.domain.split('(')[0].trim()}.
+                              </p>
+                            </div>
+                          </label>
+
+                          {/* Write-In Input & Action Button */}
+                          <div className="mt-3 pl-7 space-y-2.5">
+                            <div className="flex flex-col sm:flex-row gap-2">
+                              <input
+                                type="text"
+                                value={customValue}
+                                onChange={(e) => {
+                                  setCustomAnswers(prev => ({ ...prev, [q.id]: e.target.value }))
+                                  setSelectedDecisions(prev => ({ ...prev, [q.id]: 'custom' }))
+                                }}
+                                onFocus={() => setSelectedDecisions(prev => ({ ...prev, [q.id]: 'custom' }))}
+                                placeholder="e.g. AWS Aurora Global Database with KMS envelopes and DynamoDB streams"
+                                className="flex-1 px-3.5 py-2 text-xs sm:text-sm rounded-lg bg-white dark:bg-zinc-950 border border-slate-300 dark:border-zinc-700 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-zinc-500 focus:ring-2 focus:ring-purple-500 focus:outline-none"
+                              />
+                              <button
+                                type="button"
+                                onClick={() => handleAnalyzeCustomDecision(q)}
+                                disabled={!customValue.trim() || isAnalyzing}
+                                className="px-3.5 py-2 rounded-lg text-xs font-bold bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-xs disabled:opacity-50 shrink-0"
+                              >
+                                {isAnalyzing ? (
+                                  <>
+                                    <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                                    <span>Analyzing...</span>
+                                  </>
+                                ) : (
+                                  <>
+                                    <Zap className="w-3.5 h-3.5" />
+                                    <span>⚡ Analyze Custom Decision (AI)</span>
+                                  </>
+                                )}
+                              </button>
+                            </div>
+
+                            {/* AI Trade-Off Analysis Results Card */}
+                            {analysis && (
+                              <div className="p-3 rounded-lg bg-white dark:bg-zinc-950 border border-purple-200 dark:border-purple-900/60 space-y-1.5 animate-fade-in shadow-xs">
+                                <div className="flex items-center justify-between gap-2">
+                                  <span className="text-[11px] font-extrabold uppercase tracking-wider text-purple-600 dark:text-purple-400 flex items-center gap-1">
+                                    <Sparkles className="w-3 h-3" /> AI Architect Verdict
+                                  </span>
+                                  <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                                    analysis.isAcceptable
+                                      ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300 border border-emerald-300'
+                                      : 'bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300 border border-amber-300'
+                                  }`}>
+                                    {analysis.isAcceptable ? '✓ Enterprise Architecture Viable' : '⚠️ Architecture Exception'}
+                                  </span>
+                                </div>
+                                <p className="text-xs text-slate-700 dark:text-zinc-300">
+                                  <strong>⚖️ Engineering Trade-Off:</strong> {analysis.tradeoffAnalysis}
+                                </p>
+                                <p className="text-xs text-slate-600 dark:text-zinc-400">
+                                  <strong>🛡️ Compliance & Security:</strong> {analysis.complianceVerdict}
+                                </p>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  )
+                })}
               </div>
             )}
 

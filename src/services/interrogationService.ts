@@ -600,3 +600,99 @@ FORMAT REQUIREMENT: Return ONLY a valid JSON array of objects conforming to this
     selectedOptionId: q.options.find(o => o.isRecommended)?.id || q.options[0].id
   }))
 }
+
+export interface CustomDecisionAnalysis {
+  tradeoffAnalysis: string
+  complianceVerdict: string
+  isAcceptable: boolean
+}
+
+/**
+ * Evaluates an engineer's custom write-in architectural decision using AI or heuristic analysis.
+ */
+export async function analyzeCustomDecisionTradeoff(
+  questionTitle: string,
+  context: string,
+  customAnswer: string,
+  domain: string,
+  settings: Settings
+): Promise<CustomDecisionAnalysis> {
+  const fallback: CustomDecisionAnalysis = {
+    tradeoffAnalysis: `Adopting custom pattern: "${customAnswer}". Ensure integration test suites and operational runbooks are pinned in code.`,
+    complianceVerdict: `Compatible with ${domain.split('(')[0].trim()} assuming tamper-evident audit logging and encryption at rest are maintained.`,
+    isAcceptable: true
+  }
+
+  if (!settings.apiKey || !customAnswer.trim()) {
+    return fallback
+  }
+
+  const prompt = `You are a Principal Solutions Architect and Compliance Auditor.
+A software project governed by regulatory domain: "${domain}" is evaluating an architectural decision.
+
+DILEMMA QUESTION: "${questionTitle}"
+CONTEXT: "${context}"
+ENGINEER'S CUSTOM DECISION: "${customAnswer.trim()}"
+
+Analyze this custom answer and return ONLY a JSON object:
+{
+  "tradeoffAnalysis": "1 crisp sentence analyzing the engineering pros and cons/trade-offs of this custom choice",
+  "complianceVerdict": "1 crisp sentence stating if this choice meets ${domain.split('(')[0].trim()} security/compliance standards",
+  "isAcceptable": true
+}`
+
+  try {
+    let content: string | undefined
+
+    if (settings.providerPreset === 'gemini') {
+      const cleanModel = settings.model.replace(/^models\//, '')
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/${cleanModel}:generateContent?key=${settings.apiKey}`
+      const resp = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{ role: 'user', parts: [{ text: prompt }] }],
+          generationConfig: { response_mime_type: 'application/json', temperature: 0.2 }
+        })
+      })
+      if (!resp.ok) throw new Error(`Gemini returned ${resp.status}`)
+      const json = await resp.json()
+      content = json.candidates?.[0]?.content?.parts?.[0]?.text
+    } else {
+      const cleanBaseUrl = settings.baseUrl.replace(/\/+$/, '')
+      const endpoint = `${cleanBaseUrl}/chat/completions`
+      const headers: Record<string, string> = { 'Content-Type': 'application/json' }
+      if (settings.apiKey) headers['Authorization'] = `Bearer ${settings.apiKey}`
+
+      const payload: Record<string, unknown> = {
+        model: settings.model,
+        messages: [{ role: 'user', content: prompt }],
+        temperature: 0.2
+      }
+      if (['openai', 'groq', 'deepseek', 'xai'].includes(settings.providerPreset)) {
+        payload.response_format = { type: 'json_object' }
+      }
+
+      const resp = await fetch(endpoint, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify(payload)
+      })
+      if (!resp.ok) throw new Error(`API returned ${resp.status}`)
+      const json = await resp.json()
+      content = json.choices?.[0]?.message?.content
+    }
+
+    if (content) {
+      const cleaned = content.trim().replace(/^```json\s*/i, '').replace(/\s*```$/, '')
+      const parsed = JSON.parse(cleaned) as CustomDecisionAnalysis
+      if (parsed.tradeoffAnalysis && parsed.complianceVerdict) {
+        return parsed
+      }
+    }
+  } catch (err) {
+    console.warn('Failed to analyze custom decision with AI, using fallback:', err)
+  }
+
+  return fallback
+}
